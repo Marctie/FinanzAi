@@ -1,37 +1,153 @@
-/*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
-
-/* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
-
-/* Basic CSS for apps built with Ionic */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
-
-/* Optional CSS utils that can be commented out */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
-
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
+
+// ─── Base ──────────────────────────────────────────────────────────────────────
+* { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// ─── Numeric tabular figures ───────────────────────────────────────────────────
+.num, .amount, ion-badge, .balance-amount {
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+
+// ─── Display font ──────────────────────────────────────────────────────────────
+.font-display { font-family: var(--font-display); }
+
+// ─── Cards ─────────────────────────────────────────────────────────────────────
+ion-card {
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  margin: 0;
+}
+
+// ─── Header ────────────────────────────────────────────────────────────────────
+ion-header ion-toolbar {
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --border-width: 0;
+}
+
+ion-header::after { display: none; }
+
+// ─── Tab bar ───────────────────────────────────────────────────────────────────
+ion-tab-bar {
+  box-shadow: var(--tab-bar-shadow);
+  padding-bottom: env(safe-area-inset-bottom);
+  height: calc(56px + env(safe-area-inset-bottom));
+
+  ion-tab-button {
+    --color: var(--text-muted);
+    --color-selected: var(--color-primary);
+    font-size: 11px;
+    font-weight: 500;
+
+    ion-icon { font-size: 22px; }
+  }
+
+  // Centro FAB-style add button
+  ion-tab-button.tab-add {
+    ion-icon {
+      font-size: 36px;
+      color: var(--color-primary);
+    }
+    ion-label { display: none; }
+  }
+}
+
+// ─── Positive / Negative amounts ───────────────────────────────────────────────
+.amount-positive { color: var(--color-positive); }
+.amount-negative { color: var(--color-negative); }
+.amount-warning  { color: var(--color-warning);  }
+
+// ─── Utility: surface card ─────────────────────────────────────────────────────
+.surface-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+// ─── Section title ─────────────────────────────────────────────────────────────
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+}
+
+// ─── Chip filters ──────────────────────────────────────────────────────────────
+.filter-chips {
+  display: flex;
+  gap: 8px;
+  padding: 0 20px 16px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+
+  ion-chip {
+    --background: var(--surface-alt);
+    --color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+    height: 32px;
+    border-radius: 100px;
+    flex-shrink: 0;
+
+    &.active {
+      --background: var(--color-primary);
+      --color: #ffffff;
+    }
+  }
+}
+
+// ─── Page content padding ──────────────────────────────────────────────────────
+ion-content {
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --padding-top: 16px;
+  --padding-bottom: 32px;
+}
+
+// ─── Animations ────────────────────────────────────────────────────────────────
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-in {
+  animation: fadeSlideUp 0.35s ease both;
+}
+
+// ─── Skeleton loader ───────────────────────────────────────────────────────────
+@keyframes shimmer {
+  from { background-position: -400px 0; }
+  to   { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-alt) 25%, var(--border-color) 50%, var(--surface-alt) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}

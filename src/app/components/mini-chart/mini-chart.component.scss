@@ -1,0 +1,41 @@
+.chart-wrapper {
+  width: 100%;
+}
+
+svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chart-label {
+  font-family: var(--font-body);
+  font-size: 9px;
+  fill: var(--text-muted);
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.legend-item {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  &.income::before { background: var(--color-positive); }
+  &.expense::before { background: var(--color-negative); opacity: 0.75; }
+}

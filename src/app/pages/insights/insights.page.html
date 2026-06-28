@@ -1,0 +1,32 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>
+      <ion-icon name="sparkles-outline" style="vertical-align:middle;margin-right:6px;color:var(--color-primary)"></ion-icon>
+      Insights AI
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Tasso risparmio hero -->
+  <div class="savings-hero surface-card animate-in">
+    <div class="savings-circle" [class.good]="savingsRate >= 20" [class.ok]="savingsRate >= 10 && savingsRate < 20" [class.bad]="savingsRate < 10">
+      <span class="savings-pct num">{{ savingsRate }}%</span>
+      <span class="savings-label">risparmio</span>
+    </div>
+    <div class="savings-info">
+      <h3>Tasso di risparmio</h3>
+      <p *ngIf="savingsRate >= 20">Eccellente! Stai risparmiando più del 20% del tuo reddito.</p>
+      <p *ngIf="savingsRate >= 10 && savingsRate < 20">Buono. Cerca di arrivare al 20% di risparmio.</p>
+      <p *ngIf="savingsRate < 10">Attenzione. Prova a ridurre le spese non essenziali.</p>
+    </div>
+  </div>
+
+  <!-- Insights lista -->
+  <div class="section animate-in">
+    <p class="section-title">Analisi del mese</p>
+    <app-insight-card *ngFor="let insight of insights" [insight]="insight"></app-insight-card>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

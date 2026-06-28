@@ -1,0 +1,20 @@
+<div class="logo-wrapper" [class]="'logo-' + size">
+  <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+    <!-- F shape -->
+    <rect x="6" y="5" width="3.5" height="30" rx="1.75" fill="currentColor"/>
+    <rect x="6" y="5" width="20" height="3.5" rx="1.75" fill="currentColor"/>
+    <rect x="6" y="18.5" width="15" height="3.5" rx="1.75" fill="currentColor"/>
+    <!-- Trend line -->
+    <polyline
+      points="22,30 27,22 31,26 37,13"
+      stroke="var(--color-positive)"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      fill="none"/>
+    <circle cx="37" cy="13" r="2.5" fill="var(--color-positive)"/>
+  </svg>
+  <span *ngIf="showText" class="logo-text">
+    Finanz<span class="logo-ai">AI</span>
+  </span>
+</div>

@@ -1,0 +1,31 @@
+<div class="budget-card surface-card">
+  <div class="budget-header">
+    <div class="budget-icon" [style.background]="category?.color + '22'">
+      {{ category?.emoji ?? '💸' }}
+    </div>
+    <div class="budget-info">
+      <span class="budget-name">{{ category?.name }}</span>
+      <span class="budget-amounts num">
+        <span class="spent" [style.color]="progressColor">{{ spentFormatted }}</span>
+        <span class="separator"> / </span>
+        <span class="total">{{ budgetFormatted }}</span>
+      </span>
+    </div>
+    <div class="budget-pct num" [style.color]="progressColor">{{ percentage }}%</div>
+  </div>
+
+  <div class="progress-track">
+    <div
+      class="progress-fill"
+      [style.width.%]="percentage"
+      [style.background]="progressColor">
+    </div>
+  </div>
+
+  <p class="budget-remaining" *ngIf="remaining > 0">
+    Rimangono <strong class="num">{{ remainingFormatted }}</strong>
+  </p>
+  <p class="budget-remaining over" *ngIf="remaining === 0">
+    Budget esaurito
+  </p>
+</div>

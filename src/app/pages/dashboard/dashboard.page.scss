@@ -1,0 +1,103 @@
+// ─── Saldo Banner ──────────────────────────────────────────────────────────────
+.saldo-banner {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #2e85c8 100%);
+  border-radius: 20px;
+  padding: 24px 20px;
+  margin-bottom: 16px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+  }
+}
+
+.saldo-label  { font-size: 13px; opacity: 0.8; margin: 0 0 2px; }
+.saldo-month  { font-size: 13px; opacity: 0.7; margin: 0 0 12px; }
+
+.saldo-amount {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 400;
+  color: #fff;
+  margin: 0 0 8px;
+  line-height: 1.1;
+
+  &.negative { color: #ffd5d0; }
+}
+
+.saldo-forecast {
+  font-size: 12px;
+  opacity: 0.75;
+  margin: 0;
+  strong { opacity: 1; font-weight: 600; }
+}
+
+// ─── Quick Stats ───────────────────────────────────────────────────────────────
+.quick-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  ion-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  &.income ion-icon { color: var(--color-positive); }
+  &.expense ion-icon { color: var(--color-negative); }
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0 0 2px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--ion-text-color);
+}
+
+// ─── Sections ──────────────────────────────────────────────────────────────────
+.section {
+  margin-bottom: 24px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.see-all-btn {
+  --color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+  height: auto;
+}

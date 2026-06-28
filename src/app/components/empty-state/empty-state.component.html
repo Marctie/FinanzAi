@@ -1,0 +1,13 @@
+<div class="empty-state animate-in">
+  <div class="empty-emoji">{{ emoji }}</div>
+  <h3 class="empty-title">{{ title }}</h3>
+  <p class="empty-subtitle" *ngIf="subtitle">{{ subtitle }}</p>
+  <ion-button
+    *ngIf="actionLabel"
+    [routerLink]="actionRoute"
+    fill="solid"
+    shape="round"
+    class="empty-action">
+    {{ actionLabel }}
+  </ion-button>
+</div>

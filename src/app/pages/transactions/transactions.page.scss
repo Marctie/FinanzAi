@@ -1,0 +1,14 @@
+.filter-total {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 0 20px 16px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.filter-count {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
