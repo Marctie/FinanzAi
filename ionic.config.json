@@ -1,0 +1,7 @@
+{
+  "name": "FinanzAI",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
