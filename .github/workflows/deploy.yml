@@ -1,35 +1,66 @@
-name: Deploy su GitHub Pages
+name: Build & Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
 
       - name: Installa dipendenze
         run: npm ci
 
-      - name: Build produzione
-        run: npm run build -- --base-href "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+      - name: Calcola base href
+        id: basehref
+        run: |
+          REPO="${GITHUB_REPOSITORY#*/}"
+          if [[ "$REPO" == *.github.io ]]; then
+            echo "value=/" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=/$REPO/" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: Deploy su GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Build
+        run: npm run build -- --base-href "${{ steps.basehref.outputs.value }}"
+
+      - name: SPA fallback (404 -> index)
+        run: cp www/index.html www/404.html
+
+      - name: Disabilita Jekyll
+        run: touch www/.nojekyll
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          folder: www
-          branch: gh-pages
+          path: www
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy su GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
