@@ -1,0 +1,15 @@
+import { Component, Input } from '@angular/core';
+
+@Component({
+  selector: 'app-empty-state',
+  templateUrl: './empty-state.component.html',
+  styleUrls: ['./empty-state.component.scss'],
+  standalone: false,
+})
+export class EmptyStateComponent {
+  @Input() emoji = '📭';
+  @Input() title = 'Nessun dato';
+  @Input() subtitle = '';
+  @Input() actionLabel = '';
+  @Input() actionRoute = '';
+}

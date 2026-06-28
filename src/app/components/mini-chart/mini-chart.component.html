@@ -1,0 +1,37 @@
+<div class="chart-wrapper">
+  <svg [attr.viewBox]="'0 0 ' + W + ' ' + H" preserveAspectRatio="xMidYMid meet">
+    <g *ngFor="let bar of bars">
+      <!-- Income bar -->
+      <rect
+        [attr.x]="bar.x"
+        [attr.y]="barY(bar.incomeH)"
+        [attr.width]="barWidth"
+        [attr.height]="bar.incomeH || 2"
+        rx="2"
+        fill="var(--color-positive)"
+        opacity="0.85"/>
+      <!-- Expense bar -->
+      <rect
+        [attr.x]="bar.x + barWidth + 2"
+        [attr.y]="barY(bar.expenseH)"
+        [attr.width]="barWidth"
+        [attr.height]="bar.expenseH || 2"
+        rx="2"
+        fill="var(--color-negative)"
+        opacity="0.75"/>
+      <!-- Month label -->
+      <text
+        [attr.x]="bar.x + barWidth"
+        [attr.y]="H - 2"
+        text-anchor="middle"
+        class="chart-label">
+        {{ bar.month }}
+      </text>
+    </g>
+  </svg>
+
+  <div class="chart-legend">
+    <span class="legend-item income">Entrate</span>
+    <span class="legend-item expense">Uscite</span>
+  </div>
+</div>

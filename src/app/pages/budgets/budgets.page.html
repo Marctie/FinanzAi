@@ -1,0 +1,53 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Budget</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Riepilogo totale -->
+  <div class="budget-summary surface-card animate-in" *ngIf="budgetsWithSpent.length">
+    <div class="summary-row">
+      <div>
+        <p class="summary-label">Speso</p>
+        <p class="summary-value num amount-negative">{{ formatCurrency(totalSpent) }}</p>
+      </div>
+      <div class="summary-divider"></div>
+      <div>
+        <p class="summary-label">Budget totale</p>
+        <p class="summary-value num">{{ formatCurrency(totalBudgeted) }}</p>
+      </div>
+      <div class="summary-divider"></div>
+      <div>
+        <p class="summary-label">Disponibile</p>
+        <p class="summary-value num" [class.amount-positive]="totalBudgeted - totalSpent >= 0" [class.amount-negative]="totalBudgeted - totalSpent < 0">
+          {{ formatCurrency(totalBudgeted - totalSpent) }}
+        </p>
+      </div>
+    </div>
+    <div class="progress-track" style="margin-top:16px">
+      <div class="progress-fill" [style.width.%]="overallPct" [style.background]="overallColor"></div>
+    </div>
+    <p class="summary-pct num" [style.color]="overallColor">{{ overallPct }}% del budget mensile utilizzato</p>
+  </div>
+
+  <!-- Lista budget -->
+  <div class="section animate-in" *ngIf="budgetsWithSpent.length; else emptyBudgets">
+    <p class="section-title">Per categoria</p>
+    <app-budget-progress
+      *ngFor="let b of budgetsWithSpent"
+      [budget]="b"
+      [spent]="b.spent">
+    </app-budget-progress>
+  </div>
+
+  <ng-template #emptyBudgets>
+    <app-empty-state
+      emoji="🎯"
+      title="Nessun budget"
+      subtitle="Imposta dei budget per categoria per tenere sotto controllo le spese">
+    </app-empty-state>
+  </ng-template>
+
+  <app-footer></app-footer>
+</ion-content>

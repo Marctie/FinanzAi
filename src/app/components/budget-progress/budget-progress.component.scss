@@ -1,0 +1,67 @@
+.budget-card {
+  margin-bottom: 12px;
+}
+
+.budget-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.budget-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.budget-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.budget-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ion-text-color);
+}
+
+.budget-amounts {
+  font-size: 12px;
+  color: var(--text-muted);
+  .spent { font-weight: 700; }
+}
+
+.budget-pct {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.progress-track {
+  height: 6px;
+  background: var(--surface-alt);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 100px;
+  transition: width 0.6s ease, background 0.3s ease;
+}
+
+.budget-remaining {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 8px 0 0;
+
+  strong { color: var(--ion-text-color); }
+  &.over { color: var(--color-negative); font-weight: 600; }
+}

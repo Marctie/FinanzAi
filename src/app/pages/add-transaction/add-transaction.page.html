@@ -1,0 +1,97 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()" fill="clear">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Nuova transazione</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="save()" [disabled]="form.invalid" fill="solid" shape="round" color="primary">
+        Salva
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [formGroup]="form">
+
+  <!-- Tipo -->
+  <div class="type-toggle">
+    <button class="type-btn" [class.active]="form.get('type')?.value === 'expense'" (click)="setType('expense')">
+      <ion-icon name="arrow-up-circle-outline"></ion-icon>
+      Uscita
+    </button>
+    <button class="type-btn income" [class.active]="form.get('type')?.value === 'income'" (click)="setType('income')">
+      <ion-icon name="arrow-down-circle-outline"></ion-icon>
+      Entrata
+    </button>
+  </div>
+
+  <!-- Importo -->
+  <div class="amount-input-wrap">
+    <span class="currency-sym">€</span>
+    <input
+      class="amount-input num"
+      type="number"
+      inputmode="decimal"
+      placeholder="0,00"
+      formControlName="amount"
+      min="0"
+      step="0.01" />
+  </div>
+
+  <!-- Form fields -->
+  <div class="form-section">
+    <ion-item class="form-item" lines="none">
+      <ion-icon name="create-outline" slot="start" color="medium"></ion-icon>
+      <ion-input
+        placeholder="Titolo (es. Esselunga, Stipendio…)"
+        formControlName="title"
+        clearInput>
+      </ion-input>
+    </ion-item>
+
+    <p class="ai-suggestion" *ngIf="suggestedCategory">
+      <ion-icon name="sparkles-outline"></ion-icon>
+      Categoria suggerita: <strong>{{ suggestedCategory }}</strong>
+    </p>
+
+    <ion-item class="form-item" lines="none">
+      <ion-icon name="pricetag-outline" slot="start" color="medium"></ion-icon>
+      <ion-select placeholder="Categoria" formControlName="category" interface="action-sheet">
+        <ion-select-option *ngFor="let cat of categories" [value]="cat.id">
+          {{ cat.emoji }} {{ cat.name }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item class="form-item" lines="none">
+      <ion-icon name="calendar-outline" slot="start" color="medium"></ion-icon>
+      <ion-datetime-button datetime="picker" style="margin-left:0"></ion-datetime-button>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime
+            id="picker"
+            formControlName="date"
+            presentation="date"
+            locale="it-IT"
+            [max]="today">
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+
+    <ion-item class="form-item" lines="none">
+      <ion-icon name="chatbubble-outline" slot="start" color="medium"></ion-icon>
+      <ion-textarea
+        placeholder="Note (opzionale)"
+        formControlName="notes"
+        rows="2"
+        autoGrow>
+      </ion-textarea>
+    </ion-item>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

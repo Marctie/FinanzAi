@@ -1,0 +1,36 @@
+.logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ion-text-color);
+}
+
+.logo-icon {
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--ion-text-color);
+}
+
+.logo-ai {
+  color: var(--color-primary);
+  font-style: italic;
+}
+
+// Sizes
+.logo-sm {
+  .logo-icon { width: 28px; height: 28px; }
+  .logo-text { font-size: 18px; }
+}
+.logo-md {
+  .logo-icon { width: 36px; height: 36px; }
+  .logo-text { font-size: 22px; }
+}
+.logo-lg {
+  .logo-icon { width: 52px; height: 52px; }
+  .logo-text { font-size: 32px; }
+}

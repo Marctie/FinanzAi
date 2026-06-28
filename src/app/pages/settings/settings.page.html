@@ -1,0 +1,78 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Impostazioni</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <!-- Profilo -->
+  <div class="settings-logo animate-in">
+    <app-logo size="lg"></app-logo>
+    <p class="app-version">v{{ version }}</p>
+  </div>
+
+  <!-- Tema -->
+  <div class="settings-group animate-in">
+    <p class="section-title">Aspetto</p>
+    <div class="surface-card">
+      <p class="group-label">Tema</p>
+      <div class="theme-options">
+        <button class="theme-opt" [class.active]="currentTheme === 'light'"  (click)="setTheme('light')">
+          <ion-icon name="sunny-outline"></ion-icon>
+          <span>Chiaro</span>
+        </button>
+        <button class="theme-opt" [class.active]="currentTheme === 'dark'"   (click)="setTheme('dark')">
+          <ion-icon name="moon-outline"></ion-icon>
+          <span>Scuro</span>
+        </button>
+        <button class="theme-opt" [class.active]="currentTheme === 'system'" (click)="setTheme('system')">
+          <ion-icon name="phone-portrait-outline"></ion-icon>
+          <span>Sistema</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preferenze -->
+  <div class="settings-group animate-in">
+    <p class="section-title">Preferenze</p>
+    <ion-list class="surface-card" lines="inset">
+      <ion-item>
+        <ion-icon name="cash-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>Valuta</ion-label>
+        <ion-note slot="end">EUR €</ion-note>
+      </ion-item>
+      <ion-item lines="none">
+        <ion-icon name="language-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>Lingua</ion-label>
+        <ion-note slot="end">Italiano</ion-note>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Info -->
+  <div class="settings-group animate-in">
+    <p class="section-title">Info</p>
+    <ion-list class="surface-card" lines="inset">
+      <ion-item button (click)="openDeveloper()">
+        <ion-icon name="person-circle-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>
+          <h3>Sviluppatore</h3>
+          <p>Marco Peluso</p>
+        </ion-label>
+        <ion-icon name="open-outline" slot="end" color="medium"></ion-icon>
+      </ion-item>
+      <ion-item button (click)="openGithub()" lines="none">
+        <ion-icon name="logo-github" slot="start" color="primary"></ion-icon>
+        <ion-label>
+          <h3>Repository GitHub</h3>
+          <p>Marctie/FinanzAi</p>
+        </ion-label>
+        <ion-icon name="open-outline" slot="end" color="medium"></ion-icon>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

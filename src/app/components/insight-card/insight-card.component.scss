@@ -1,0 +1,32 @@
+.insight-card {
+  margin-bottom: 12px;
+  border-left: 3px solid transparent;
+
+  &.insight-success { border-left-color: var(--color-positive); }
+  &.insight-warning { border-left-color: var(--color-warning); }
+  &.insight-info    { border-left-color: var(--color-primary); }
+  &.insight-tip     { border-left-color: var(--ion-color-medium); }
+}
+
+.insight-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.insight-emoji { font-size: 20px; line-height: 1; }
+
+.insight-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ion-text-color);
+  margin: 0;
+}
+
+.insight-body {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}

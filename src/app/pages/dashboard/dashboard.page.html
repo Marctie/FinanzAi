@@ -1,0 +1,87 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <app-logo size="sm" slot="start"></app-logo>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/tabs/insights" fill="clear">
+        <ion-icon name="bulb-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Saldo Banner -->
+  <div class="saldo-banner animate-in">
+    <p class="saldo-label">Saldo del mese</p>
+    <p class="saldo-month">{{ currentMonthLabel | titlecase }}</p>
+    <h1 class="saldo-amount balance-amount num" [class.positive]="balance >= 0" [class.negative]="balance < 0">
+      {{ balanceSign }}{{ formatCurrency(balance) }}
+    </h1>
+    <p class="saldo-forecast num" *ngIf="forecast !== 0">
+      Previsione fine mese: <strong>{{ formatCurrency(forecast) }}</strong>
+    </p>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="quick-stats animate-in">
+    <div class="stat-card income">
+      <ion-icon name="arrow-down-circle-outline"></ion-icon>
+      <div>
+        <p class="stat-label">Entrate</p>
+        <p class="stat-value num">{{ formatCurrency(totalIncome) }}</p>
+      </div>
+    </div>
+    <div class="stat-card expense">
+      <ion-icon name="arrow-up-circle-outline"></ion-icon>
+      <div>
+        <p class="stat-label">Uscite</p>
+        <p class="stat-value num">{{ formatCurrency(totalExpense) }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grafico andamento -->
+  <div class="section animate-in" *ngIf="chartData.length">
+    <p class="section-title">Andamento 6 mesi</p>
+    <div class="surface-card">
+      <app-mini-chart [data]="chartData"></app-mini-chart>
+    </div>
+  </div>
+
+  <!-- AI Insights -->
+  <div class="section animate-in" *ngIf="insights.length">
+    <p class="section-title">Suggerimenti AI</p>
+    <app-insight-card *ngFor="let insight of insights" [insight]="insight"></app-insight-card>
+  </div>
+
+  <!-- Transazioni recenti -->
+  <div class="section animate-in">
+    <div class="section-header">
+      <p class="section-title" style="margin:0">Transazioni recenti</p>
+      <ion-button routerLink="/tabs/transactions" fill="clear" size="small" class="see-all-btn">
+        Vedi tutte
+        <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      </ion-button>
+    </div>
+
+    <ion-list lines="none" *ngIf="recentTx.length; else emptyTx">
+      <app-transaction-card
+        *ngFor="let tx of recentTx"
+        [transaction]="tx"
+        (deleted)="onTransactionDeleted($event)">
+      </app-transaction-card>
+    </ion-list>
+
+    <ng-template #emptyTx>
+      <app-empty-state
+        emoji="💸"
+        title="Nessuna transazione"
+        subtitle="Aggiungi la tua prima transazione"
+        actionLabel="Aggiungi"
+        actionRoute="/tabs/add-transaction">
+      </app-empty-state>
+    </ng-template>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>
