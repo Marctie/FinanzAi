@@ -18,19 +18,49 @@
 </ion-header>
 
 <ion-content>
-  <!-- Filtri -->
-  <div class="filter-chips">
-    <ion-chip [class.active]="activeFilter === 'all'"     (click)="setFilter('all')">Tutti</ion-chip>
-    <ion-chip [class.active]="activeFilter === 'income'"  (click)="setFilter('income')">Entrate</ion-chip>
-    <ion-chip [class.active]="activeFilter === 'expense'" (click)="setFilter('expense')">Uscite</ion-chip>
+  <!-- Filtro mese -->
+  <div class="filter-chips month-chips">
+    <ion-chip
+      *ngFor="let m of months"
+      [class.active]="activeMonth === m.value"
+      (click)="setMonth(m.value)">
+      {{ m.label }}
+    </ion-chip>
   </div>
 
-  <!-- Totale filtrato -->
-  <div class="filter-total" *ngIf="filtered.length">
-    <span class="num" [class.amount-positive]="totalFiltered >= 0" [class.amount-negative]="totalFiltered < 0">
-      {{ totalFiltered >= 0 ? '+' : '' }}{{ formatCurrency(totalFiltered) }}
-    </span>
-    <span class="filter-count">· {{ filtered.length }} movimenti</span>
+  <!-- Filtro tipo -->
+  <div class="filter-chips type-chips">
+    <ion-chip [class.active]="activeFilter === 'all'"     (click)="setFilter('all')">Tutti</ion-chip>
+    <ion-chip [class.active]="activeFilter === 'income'"  (click)="setFilter('income')">
+      <ion-icon name="arrow-down-circle-outline" class="chip-icon income"></ion-icon>Entrate
+    </ion-chip>
+    <ion-chip [class.active]="activeFilter === 'expense'" (click)="setFilter('expense')">
+      <ion-icon name="arrow-up-circle-outline" class="chip-icon expense"></ion-icon>Uscite
+    </ion-chip>
+    <ion-chip
+      *ngFor="let cat of expenseCategories"
+      [class.active]="activeCategoryId === cat.id"
+      (click)="setCategory(cat.id)">
+      {{ cat.emoji }} {{ cat.name }}
+    </ion-chip>
+  </div>
+
+  <!-- Riepilogo filtrato -->
+  <div class="filter-summary" *ngIf="filtered.length">
+    <div class="summary-stat">
+      <span class="ss-label">Entrate</span>
+      <span class="ss-value num amount-positive">+{{ formatCurrency(totalIncome) }}</span>
+    </div>
+    <div class="summary-stat">
+      <span class="ss-label">Uscite</span>
+      <span class="ss-value num amount-negative">-{{ formatCurrency(totalExpense) }}</span>
+    </div>
+    <div class="summary-stat">
+      <span class="ss-label">Saldo</span>
+      <span class="ss-value num" [class.amount-positive]="totalFiltered >= 0" [class.amount-negative]="totalFiltered < 0">
+        {{ totalFiltered >= 0 ? '+' : '' }}{{ formatCurrency(totalFiltered) }}
+      </span>
+    </div>
   </div>
 
   <!-- Lista -->
@@ -38,6 +68,7 @@
     <app-transaction-card
       *ngFor="let tx of filtered; trackBy: trackById"
       [transaction]="tx"
+      (edited)="onEdit($event)"
       (deleted)="onDeleted($event)">
     </app-transaction-card>
   </ion-list>
@@ -46,7 +77,7 @@
     <app-empty-state
       emoji="🔍"
       title="Nessun risultato"
-      subtitle="Prova a modificare i filtri o la ricerca"
+      subtitle="Prova a modificare i filtri o aggiungi una nuova transazione"
       actionLabel="Aggiungi transazione"
       actionRoute="/tabs/add-transaction">
     </app-empty-state>

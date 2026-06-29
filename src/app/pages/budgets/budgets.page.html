@@ -5,6 +5,12 @@
 </ion-header>
 
 <ion-content>
+  <!-- Allerte budget -->
+  <div class="alert-banner animate-in" *ngIf="alertBudgets.length">
+    <ion-icon name="warning-outline"></ion-icon>
+    <span>{{ alertBudgets.length }} {{ alertBudgets.length === 1 ? 'categoria vicina' : 'categorie vicine' }} al limite</span>
+  </div>
+
   <!-- Riepilogo totale -->
   <div class="budget-summary surface-card animate-in" *ngIf="budgetsWithSpent.length">
     <div class="summary-row">
@@ -20,7 +26,9 @@
       <div class="summary-divider"></div>
       <div>
         <p class="summary-label">Disponibile</p>
-        <p class="summary-value num" [class.amount-positive]="totalBudgeted - totalSpent >= 0" [class.amount-negative]="totalBudgeted - totalSpent < 0">
+        <p class="summary-value num"
+          [class.amount-positive]="totalBudgeted - totalSpent >= 0"
+          [class.amount-negative]="totalBudgeted - totalSpent < 0">
           {{ formatCurrency(totalBudgeted - totalSpent) }}
         </p>
       </div>
@@ -31,14 +39,25 @@
     <p class="summary-pct num" [style.color]="overallColor">{{ overallPct }}% del budget mensile utilizzato</p>
   </div>
 
+  <!-- Ricorrenti info -->
+  <div class="info-card surface-card animate-in" *ngIf="recurringCount > 0">
+    <ion-icon name="repeat-outline" color="primary"></ion-icon>
+    <p>
+      <strong>{{ recurringCount }}</strong>
+      {{ recurringCount === 1 ? 'transazione ricorrente rilevata' : 'transazioni ricorrenti rilevate' }}
+      dall'AI nell'ultimo periodo.
+    </p>
+  </div>
+
   <!-- Lista budget -->
   <div class="section animate-in" *ngIf="budgetsWithSpent.length; else emptyBudgets">
     <p class="section-title">Per categoria</p>
-    <app-budget-progress
+    <div
       *ngFor="let b of budgetsWithSpent"
-      [budget]="b"
-      [spent]="b.spent">
-    </app-budget-progress>
+      class="budget-item-wrapper"
+      (click)="openForm(b)">
+      <app-budget-progress [budget]="b" [spent]="b.spent" [isAlert]="b.isAlert"></app-budget-progress>
+    </div>
   </div>
 
   <ng-template #emptyBudgets>
@@ -51,3 +70,9 @@
 
   <app-footer></app-footer>
 </ion-content>
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button (click)="openForm()" color="primary">
+    <ion-icon name="add-outline"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

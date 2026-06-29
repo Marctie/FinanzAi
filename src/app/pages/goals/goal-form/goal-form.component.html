@@ -1,0 +1,76 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismiss()" fill="clear">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? 'Modifica obiettivo' : 'Nuovo obiettivo' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="save()" [disabled]="form.invalid" fill="solid" shape="round" color="primary">
+        Salva
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [formGroup]="form" class="ion-padding">
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="flag-outline" slot="start" color="medium"></ion-icon>
+    <ion-input placeholder="Nome obiettivo" formControlName="name"></ion-input>
+  </ion-item>
+
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="happy-outline" slot="start" color="medium"></ion-icon>
+    <ion-input placeholder="Emoji / icona (es: 🏠, ✈️, 🚗)" formControlName="category"></ion-input>
+  </ion-item>
+
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="cash-outline" slot="start" color="medium"></ion-icon>
+    <ion-input placeholder="Obiettivo (€)" type="number" inputmode="decimal" formControlName="targetAmount" min="1"></ion-input>
+  </ion-item>
+
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="checkmark-circle-outline" slot="start" color="medium"></ion-icon>
+    <ion-input placeholder="Già risparmiato (€)" type="number" inputmode="decimal" formControlName="currentAmount" min="0"></ion-input>
+  </ion-item>
+
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="calendar-outline" slot="start" color="medium"></ion-icon>
+    <ion-datetime-button datetime="goalDeadline"></ion-datetime-button>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime
+          id="goalDeadline"
+          presentation="date"
+          formControlName="deadline"
+          locale="it-IT"
+          [min]="today">
+        </ion-datetime>
+      </ng-template>
+    </ion-modal>
+  </ion-item>
+
+  <p class="color-label">Colore</p>
+  <div class="color-grid">
+    <button
+      *ngFor="let c of colors"
+      class="color-dot"
+      [style.background]="c"
+      [class.selected]="form.get('color')?.value === c"
+      (click)="form.get('color')?.setValue(c)"
+      type="button">
+    </button>
+  </div>
+
+  <ion-button
+    *ngIf="isEdit"
+    expand="block"
+    fill="outline"
+    color="danger"
+    (click)="delete()"
+    style="margin-top:16px">
+    <ion-icon name="trash-outline" slot="start"></ion-icon>
+    Elimina obiettivo
+  </ion-button>
+</ion-content>

@@ -11,7 +11,8 @@ import { AnalyticsService } from '../../services/analytics.service';
 })
 export class BudgetProgressComponent implements OnChanges {
   @Input() budget!: Budget;
-  @Input() spent = 0;
+  @Input() spent   = 0;
+  @Input() isAlert = false;
 
   percentage = 0;
   progressColor = 'var(--color-positive)';

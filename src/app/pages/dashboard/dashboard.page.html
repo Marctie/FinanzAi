@@ -12,9 +12,11 @@
 <ion-content>
   <!-- Saldo Banner -->
   <div class="saldo-banner animate-in">
-    <p class="saldo-label">Saldo del mese</p>
+    <p class="saldo-label">Saldo mensile</p>
     <p class="saldo-month">{{ currentMonthLabel | titlecase }}</p>
-    <h1 class="saldo-amount balance-amount num" [class.positive]="balance >= 0" [class.negative]="balance < 0">
+    <h1 class="saldo-amount balance-amount num"
+        [class.positive]="balance >= 0"
+        [class.negative]="balance < 0">
       {{ balanceSign }}{{ formatCurrency(balance) }}
     </h1>
     <p class="saldo-forecast num" *ngIf="forecast !== 0">
@@ -40,11 +42,30 @@
     </div>
   </div>
 
-  <!-- Grafico andamento -->
+  <!-- AI Monthly Summary -->
+  <div class="section animate-in ai-summary" *ngIf="aiMonthlySummary">
+    <div class="surface-card summary-card">
+      <div class="summary-header">
+        <ion-icon name="sparkles-outline" color="primary"></ion-icon>
+        <span>Riepilogo del mese</span>
+      </div>
+      <p class="summary-text">{{ aiMonthlySummary }}</p>
+    </div>
+  </div>
+
+  <!-- Grafico Andamento 6 mesi -->
   <div class="section animate-in" *ngIf="chartData.length">
     <p class="section-title">Andamento 6 mesi</p>
-    <div class="surface-card">
-      <app-mini-chart [data]="chartData"></app-mini-chart>
+    <div class="surface-card chart-card">
+      <canvas #barCanvas></canvas>
+    </div>
+  </div>
+
+  <!-- Grafico Spese per Categoria -->
+  <div class="section animate-in" *ngIf="categorySlices.length">
+    <p class="section-title">Spese per categoria</p>
+    <div class="surface-card chart-card donut-card">
+      <canvas #donutCanvas></canvas>
     </div>
   </div>
 
@@ -57,10 +78,9 @@
   <!-- Transazioni recenti -->
   <div class="section animate-in">
     <div class="section-header">
-      <p class="section-title" style="margin:0">Transazioni recenti</p>
+      <p class="section-title" style="margin:0">Recenti</p>
       <ion-button routerLink="/tabs/transactions" fill="clear" size="small" class="see-all-btn">
-        Vedi tutte
-        <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+        Vedi tutte <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
       </ion-button>
     </div>
 
@@ -68,6 +88,7 @@
       <app-transaction-card
         *ngFor="let tx of recentTx"
         [transaction]="tx"
+        (edited)="onTransactionEdited($event)"
         (deleted)="onTransactionDeleted($event)">
       </app-transaction-card>
     </ion-list>

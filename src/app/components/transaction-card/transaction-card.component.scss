@@ -37,8 +37,19 @@
     display: flex;
     align-items: center;
     gap: 4px;
+    flex-wrap: wrap;
   }
-  .tx-dot { opacity: 0.5; }
+  .tx-dot { opacity: 0.4; }
+  .recurring-icon { font-size: 11px; color: var(--color-primary); }
+  .tx-notes {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 3px 0 0;
+    font-style: italic;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 
 .tx-amount {

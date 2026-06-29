@@ -1,0 +1,98 @@
+<ion-content class="onboarding-content">
+  <div class="onboarding-wrap">
+    <!-- Step indicator -->
+    <div class="step-dots">
+      <span
+        *ngFor="let s of steps; let i = index"
+        class="dot"
+        [class.active]="i === step"
+        [class.done]="i < step">
+      </span>
+    </div>
+
+    <!-- Slides -->
+    <div class="slide animate-in">
+      <!-- Step 0: Welcome -->
+      <ng-container *ngIf="step === 0">
+        <div class="slide-icon">💰</div>
+        <h2>{{ steps[0].title }}</h2>
+        <p>{{ steps[0].subtitle }}</p>
+        <ul class="feature-list">
+          <li><ion-icon name="bar-chart-outline" color="primary"></ion-icon> Dashboard con grafici</li>
+          <li><ion-icon name="sparkles-outline"  color="primary"></ion-icon> AI locale per insights</li>
+          <li><ion-icon name="wallet-outline"    color="primary"></ion-icon> Gestione budget e obiettivi</li>
+          <li><ion-icon name="shield-checkmark-outline" color="primary"></ion-icon> Dati solo sul tuo dispositivo</li>
+        </ul>
+      </ng-container>
+
+      <!-- Step 1: Name -->
+      <ng-container *ngIf="step === 1">
+        <div class="slide-icon">👤</div>
+        <h2>{{ steps[1].title }}</h2>
+        <p>{{ steps[1].subtitle }}</p>
+        <ion-item class="onb-input" lines="none">
+          <ion-input
+            placeholder="Il tuo nome (opzionale)"
+            [(ngModel)]="name"
+            autocomplete="given-name">
+          </ion-input>
+        </ion-item>
+      </ng-container>
+
+      <!-- Step 2: Income -->
+      <ng-container *ngIf="step === 2">
+        <div class="slide-icon">💵</div>
+        <h2>{{ steps[2].title }}</h2>
+        <p>{{ steps[2].subtitle }}</p>
+        <ion-item class="onb-input" lines="none">
+          <ion-input
+            placeholder="Es: 2500"
+            type="number"
+            inputmode="decimal"
+            [(ngModel)]="income">
+          </ion-input>
+          <ion-note slot="end">€/mese</ion-note>
+        </ion-item>
+      </ng-container>
+
+      <!-- Step 3: Savings goal -->
+      <ng-container *ngIf="step === 3">
+        <div class="slide-icon">🎯</div>
+        <h2>{{ steps[3].title }}</h2>
+        <p>{{ steps[3].subtitle }}</p>
+        <ion-item class="onb-input" lines="none">
+          <ion-input
+            placeholder="Es: 500"
+            type="number"
+            inputmode="decimal"
+            [(ngModel)]="savGoal">
+          </ion-input>
+          <ion-note slot="end">€/mese</ion-note>
+        </ion-item>
+      </ng-container>
+    </div>
+
+    <!-- Actions -->
+    <div class="onb-actions">
+      <ion-button
+        *ngIf="step > 0"
+        fill="clear"
+        color="medium"
+        (click)="prev()">
+        Indietro
+      </ion-button>
+      <ion-button
+        expand="block"
+        color="primary"
+        shape="round"
+        class="next-btn"
+        (click)="next()">
+        {{ step === steps.length - 1 ? 'Inizia!' : 'Continua' }}
+      </ion-button>
+    </div>
+
+    <ion-button fill="clear" color="medium" size="small" class="skip-btn" (click)="skip()">
+      Salta
+    </ion-button>
+  </div>
+</ion-content>
