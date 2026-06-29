@@ -2,6 +2,8 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { Transaction } from '../../models/transaction.model';
 import { getCategoryById } from '../../core/categories.constants';
 import { AnalyticsService } from '../../services/analytics.service';
+import { Capacitor } from '@capacitor/core';
+import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 
 @Component({
   selector: 'app-transaction-card',
@@ -26,6 +28,13 @@ export class TransactionCardComponent {
   get dateFormatted(): string { return this.analytics.formatDate(this.transaction.date); }
   get isIncome(): boolean     { return this.transaction.type === 'income'; }
 
-  onEdit():   void { this.edited.emit(this.transaction.id); }
-  onDelete(): void { this.deleted.emit(this.transaction.id); }
+  onEdit(): void {
+    if (Capacitor.isNativePlatform()) Haptics.impact({ style: ImpactStyle.Light });
+    this.edited.emit(this.transaction.id);
+  }
+
+  onDelete(): void {
+    if (Capacitor.isNativePlatform()) Haptics.notification({ type: NotificationType.Warning });
+    this.deleted.emit(this.transaction.id);
+  }
 }

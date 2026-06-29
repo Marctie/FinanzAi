@@ -1,3 +1,12 @@
+// ─── Font locali (offline-safe per APK) ───────────────────────────────────────
+@import "@fontsource/work-sans/300.css";
+@import "@fontsource/work-sans/400.css";
+@import "@fontsource/work-sans/500.css";
+@import "@fontsource/work-sans/600.css";
+@import "@fontsource/work-sans/700.css";
+@import "@fontsource/instrument-serif/400.css";
+@import "@fontsource/instrument-serif/400-italic.css";
+
 @import "@ionic/angular/css/core.css";
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
@@ -17,6 +26,22 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;       // disabilita pull-to-refresh browser
+}
+
+// ─── Touch optimizations ───────────────────────────────────────────────────────
+a, button, ion-button, ion-chip, ion-item, ion-tab-button,
+ion-fab-button, ion-back-button, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+button { user-select: none; -webkit-user-select: none; }
+
+// ─── Scrollbar globale — nascosta su mobile ────────────────────────────────────
+* {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
 }
 
 // ─── Numeric tabular figures ───────────────────────────────────────────────────
@@ -59,7 +84,6 @@ ion-tab-bar {
     ion-icon { font-size: 22px; }
   }
 
-  // Centro FAB-style add button
   ion-tab-button.tab-add {
     ion-icon {
       font-size: 36px;
@@ -98,6 +122,7 @@ ion-tab-bar {
   padding: 0 20px 16px;
   overflow-x: auto;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
   &::-webkit-scrollbar { display: none; }
 
   ion-chip {
@@ -122,6 +147,22 @@ ion-content {
   --padding-end: 20px;
   --padding-top: 16px;
   --padding-bottom: 32px;
+  --keyboard-offset: 0px;
+}
+
+// ─── Safe area for modals / full screens ───────────────────────────────────────
+.onboarding-modal .modal-wrapper {
+  border-radius: 24px 24px 0 0;
+}
+
+// ─── FAB safe area ─────────────────────────────────────────────────────────────
+ion-fab[vertical="bottom"] {
+  margin-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+// ─── Ion input — font size ≥16px evita autozoom iOS ───────────────────────────
+ion-input, ion-textarea, ion-searchbar {
+  --font-size: 16px;
 }
 
 // ─── Animations ────────────────────────────────────────────────────────────────
@@ -137,11 +178,6 @@ ion-content {
 
 .animate-in {
   animation: fadeSlideUp 0.35s ease both;
-}
-
-// ─── Onboarding modal ──────────────────────────────────────────────────────────
-.onboarding-modal .modal-wrapper {
-  border-radius: 24px 24px 0 0;
 }
 
 // ─── Skeleton loader ───────────────────────────────────────────────────────────

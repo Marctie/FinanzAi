@@ -6,6 +6,8 @@ import { AiService } from '../../services/ai.service';
 import { DEFAULT_CATEGORIES, getCategoriesByType } from '../../core/categories.constants';
 import { Category } from '../../models/category.model';
 import { Transaction } from '../../models/transaction.model';
+import { Capacitor } from '@capacitor/core';
+import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 
 @Component({
   selector: 'app-add-transaction',
@@ -90,7 +92,11 @@ export class AddTransactionPage implements OnInit {
   }
 
   save(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      if (Capacitor.isNativePlatform()) Haptics.notification({ type: NotificationType.Error });
+      return;
+    }
+    if (Capacitor.isNativePlatform()) Haptics.impact({ style: ImpactStyle.Medium });
     const val = this.form.value;
     const dateStr = typeof val.date === 'string' ? val.date.split('T')[0] : val.date;
 
