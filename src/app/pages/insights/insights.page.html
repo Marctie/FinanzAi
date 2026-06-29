@@ -10,7 +10,10 @@
 <ion-content>
   <!-- Tasso risparmio hero -->
   <div class="savings-hero surface-card animate-in">
-    <div class="savings-circle" [class.good]="savingsRate >= 20" [class.ok]="savingsRate >= 10 && savingsRate < 20" [class.bad]="savingsRate < 10">
+    <div class="savings-circle"
+      [class.good]="savingsRate >= 20"
+      [class.ok]="savingsRate >= 10 && savingsRate < 20"
+      [class.bad]="savingsRate < 10">
       <span class="savings-pct num">{{ savingsRate }}%</span>
       <span class="savings-label">risparmio</span>
     </div>
@@ -20,6 +23,42 @@
       <p *ngIf="savingsRate >= 10 && savingsRate < 20">Buono. Cerca di arrivare al 20% di risparmio.</p>
       <p *ngIf="savingsRate < 10">Attenzione. Prova a ridurre le spese non essenziali.</p>
     </div>
+  </div>
+
+  <!-- Statistiche trend -->
+  <div class="stats-grid animate-in">
+    <div class="stat-tile surface-card" *ngIf="avgMonthlySaving > 0">
+      <ion-icon name="trending-up-outline" color="primary"></ion-icon>
+      <p class="stat-val num">{{ formatCurrency(avgMonthlySaving) }}</p>
+      <p class="stat-lbl">Risparmio medio mensile</p>
+    </div>
+    <div class="stat-tile surface-card" *ngIf="bestMonth">
+      <ion-icon name="trophy-outline" color="warning"></ion-icon>
+      <p class="stat-val num">{{ bestMonth!.month }}</p>
+      <p class="stat-lbl">Miglior mese</p>
+    </div>
+    <div class="stat-tile surface-card" *ngIf="recurringCount > 0">
+      <ion-icon name="repeat-outline" color="primary"></ion-icon>
+      <p class="stat-val num">{{ recurringCount }}</p>
+      <p class="stat-lbl">Transazioni ricorrenti</p>
+    </div>
+    <div class="stat-tile surface-card" *ngIf="topCategory">
+      <ion-icon name="flame-outline" color="danger"></ion-icon>
+      <p class="stat-val num ellipsis">{{ topCategory }}</p>
+      <p class="stat-lbl">Categoria top</p>
+    </div>
+  </div>
+
+  <!-- Obiettivi banner -->
+  <div class="goals-banner surface-card animate-in" (click)="goToGoals()">
+    <div class="goals-banner-left">
+      <ion-icon name="flag-outline" color="primary"></ion-icon>
+      <div>
+        <p class="goals-banner-title">Obiettivi di risparmio</p>
+        <p class="goals-banner-sub">{{ activeGoals }} obiettivi attivi</p>
+      </div>
+    </div>
+    <ion-icon name="chevron-forward-outline" color="medium"></ion-icon>
   </div>
 
   <!-- Insights lista -->

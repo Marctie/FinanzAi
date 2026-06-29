@@ -123,6 +123,55 @@ export class AiService {
     return insights;
   }
 
+  getMonthlySummary(transactions: Transaction[]): string {
+    const month    = this.analytics.getCurrentMonthKey();
+    const prevM    = (() => {
+      const d = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    })();
+    const thisTx   = transactions.filter(t => t.date.startsWith(month));
+    const prevTx   = transactions.filter(t => t.date.startsWith(prevM));
+    if (!thisTx.length) return '';
+
+    const income   = this.analytics.totalIncome(thisTx);
+    const expense  = this.analytics.totalExpense(thisTx);
+    const pExpense = this.analytics.totalExpense(prevTx);
+    const saved    = income - expense;
+    const fmt      = (v: number) => `€${v.toLocaleString('it-IT', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+
+    const byCat    = this.analytics.expenseByCategory(thisTx);
+    const topEntry = Object.entries(byCat).sort((a, b) => b[1] - a[1])[0];
+    const topCat   = topEntry ? getCategoryById(topEntry[0]) : null;
+
+    let summary = `Questo mese hai guadagnato ${fmt(income)} e speso ${fmt(expense)}.`;
+    if (saved > 0) summary += ` Hai risparmiato ${fmt(saved)}.`;
+    if (topCat)    summary += ` La voce più alta è ${topCat.emoji} ${topCat.name} (${fmt(topEntry[1])}).`;
+    if (pExpense > 0) {
+      const diff = expense - pExpense;
+      const pct  = Math.abs(Math.round((diff / pExpense) * 100));
+      if (Math.abs(diff) > 30)
+        summary += ` Spese ${diff > 0 ? pct + '% in più' : pct + '% in meno'} rispetto al mese scorso.`;
+    }
+    return summary;
+  }
+
+  detectRecurring(transactions: Transaction[]): Transaction[] {
+    const grouped: Record<string, Transaction[]> = {};
+    for (const tx of transactions.filter(t => t.type === 'expense')) {
+      const key = `${tx.category}__${Math.round(tx.amount)}`;
+      grouped[key] = grouped[key] ?? [];
+      grouped[key].push(tx);
+    }
+    const recurring: Transaction[] = [];
+    for (const group of Object.values(grouped)) {
+      if (group.length >= 2) {
+        const months = new Set(group.map(t => t.date.slice(0, 7)));
+        if (months.size >= 2) recurring.push(...group);
+      }
+    }
+    return recurring;
+  }
+
   forecastEndOfMonth(transactions: Transaction[]): number {
     const now  = new Date();
     const day  = now.getDate();

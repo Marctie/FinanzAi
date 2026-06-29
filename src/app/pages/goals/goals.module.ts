@@ -3,18 +3,18 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { BudgetsPage } from './budgets.page';
-import { BudgetFormComponent } from './budget-form/budget-form.component';
+import { GoalsPage } from './goals.page';
+import { GoalFormComponent } from './goal-form/goal-form.component';
 import { SharedModule } from '../../components/shared.module';
 
 @NgModule({
-  declarations: [BudgetsPage, BudgetFormComponent],
+  declarations: [GoalsPage, GoalFormComponent],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     IonicModule,
-    RouterModule.forChild([{ path: '', component: BudgetsPage }]),
+    RouterModule.forChild([{ path: '', component: GoalsPage }]),
     SharedModule,
   ],
 })
-export class BudgetsPageModule {}
+export class GoalsPageModule {}

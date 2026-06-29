@@ -1,0 +1,32 @@
+.form-item {
+  --background: var(--surface-alt);
+  --border-radius: 12px;
+  --padding-start: 12px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.color-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 16px 0 8px;
+}
+.color-grid {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 0 2px;
+}
+.color-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+  &.selected { border-color: var(--ion-text-color); transform: scale(1.15); }
+  &:active   { transform: scale(0.9); }
+}

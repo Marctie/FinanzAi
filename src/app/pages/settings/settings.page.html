@@ -6,7 +6,7 @@
 
 <ion-content>
 
-  <!-- Profilo -->
+  <!-- Logo -->
   <div class="settings-logo animate-in">
     <app-logo size="lg"></app-logo>
     <p class="app-version">v{{ version }}</p>
@@ -47,6 +47,28 @@
         <ion-icon name="language-outline" slot="start" color="primary"></ion-icon>
         <ion-label>Lingua</ion-label>
         <ion-note slot="end">Italiano</ion-note>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Dati -->
+  <div class="settings-group animate-in">
+    <p class="section-title">Dati</p>
+    <ion-list class="surface-card" lines="inset">
+      <ion-item button (click)="exportCsv()">
+        <ion-icon name="download-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>
+          <h3>Esporta CSV</h3>
+          <p>Scarica tutte le transazioni</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+      </ion-item>
+      <ion-item button (click)="clearData()" lines="none">
+        <ion-icon name="trash-outline" slot="start" color="danger"></ion-icon>
+        <ion-label color="danger">
+          <h3>Cancella tutti i dati</h3>
+          <p>Operazione irreversibile</p>
+        </ion-label>
       </ion-item>
     </ion-list>
   </div>

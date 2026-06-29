@@ -1,0 +1,86 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/insights"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Obiettivi</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Riepilogo -->
+  <div class="goals-hero surface-card animate-in" *ngIf="goals.length">
+    <div class="hero-row">
+      <div class="hero-stat">
+        <p class="hero-label">Risparmiato</p>
+        <p class="hero-value num amount-positive">{{ formatCurrency(totalSaved) }}</p>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <p class="hero-label">Obiettivo totale</p>
+        <p class="hero-value num">{{ formatCurrency(totalTarget) }}</p>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <p class="hero-label">Completati</p>
+        <p class="hero-value num">{{ completedCount }}/{{ goals.length }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista obiettivi -->
+  <div class="section animate-in" *ngIf="goals.length; else emptyGoals">
+    <p class="section-title">I tuoi obiettivi</p>
+
+    <div class="goal-card surface-card" *ngFor="let g of goals" (click)="openForm(g)">
+      <div class="goal-header">
+        <div class="goal-icon" [style.background]="g.color + '22'">
+          <span>{{ g.category }}</span>
+        </div>
+        <div class="goal-info">
+          <p class="goal-name">{{ g.name }}</p>
+          <p class="goal-deadline" *ngIf="g.daysLeft !== null">
+            <ion-icon name="calendar-outline"></ion-icon>
+            {{ g.daysLeft === 0 ? 'Scade oggi' : g.daysLeft + ' giorni rimanenti' }}
+          </p>
+        </div>
+        <div class="goal-pct num" [style.color]="g.color">{{ g.pct }}%</div>
+      </div>
+
+      <div class="goal-track">
+        <div class="goal-fill" [style.width.%]="g.pct" [style.background]="g.color"></div>
+      </div>
+
+      <div class="goal-footer">
+        <span class="num">{{ formatCurrency(g.currentAmount) }}</span>
+        <span class="goal-sep">di</span>
+        <span class="num">{{ formatCurrency(g.targetAmount) }}</span>
+        <ion-button
+          class="contrib-btn"
+          fill="outline"
+          size="small"
+          [style.--color]="g.color"
+          [style.--border-color]="g.color"
+          (click)="$event.stopPropagation(); addContrib(g)">
+          + Aggiungi
+        </ion-button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #emptyGoals>
+    <app-empty-state
+      emoji="🏆"
+      title="Nessun obiettivo"
+      subtitle="Crea il tuo primo obiettivo di risparmio per iniziare">
+    </app-empty-state>
+  </ng-template>
+
+  <app-footer></app-footer>
+</ion-content>
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button (click)="openForm()" color="primary">
+    <ion-icon name="add-outline"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

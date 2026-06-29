@@ -28,6 +28,10 @@ const routes: Routes = [
         loadChildren: () => import('../pages/insights/insights.module').then(m => m.InsightsPageModule),
       },
       {
+        path: 'goals',
+        loadChildren: () => import('../pages/goals/goals.module').then(m => m.GoalsPageModule),
+      },
+      {
         path: 'settings',
         loadChildren: () => import('../pages/settings/settings.module').then(m => m.SettingsPageModule),
       },

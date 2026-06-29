@@ -9,12 +9,25 @@
         <span class="tx-category">{{ category?.name }}</span>
         <span class="tx-dot">·</span>
         <span class="tx-date">{{ dateFormatted }}</span>
+        <ng-container *ngIf="transaction.isRecurring">
+          <span class="tx-dot">·</span>
+          <ion-icon name="repeat-outline" class="recurring-icon"></ion-icon>
+        </ng-container>
       </p>
+      <p class="tx-notes" *ngIf="transaction.notes">{{ transaction.notes }}</p>
     </ion-label>
-    <div class="tx-amount num" slot="end" [class.amount-positive]="isIncome" [class.amount-negative]="!isIncome">
+    <div class="tx-amount num" slot="end"
+         [class.amount-positive]="isIncome"
+         [class.amount-negative]="!isIncome">
       {{ amountFormatted }}
     </div>
   </ion-item>
+
+  <ion-item-options side="start">
+    <ion-item-option color="primary" (click)="onEdit()">
+      <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
+    </ion-item-option>
+  </ion-item-options>
 
   <ion-item-options side="end">
     <ion-item-option color="danger" (click)="onDelete()">

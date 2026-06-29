@@ -90,6 +90,12 @@ export class StorageService {
     this.goals$.next(list);
   }
 
+  deleteGoal(id: string): void {
+    const list = this.goals$.value.filter(g => g.id !== id);
+    this.save(KEYS.goals, list);
+    this.goals$.next(list);
+  }
+
   // ─── Preferences ───────────────────────────────────────────────────────────
   savePreferences(prefs: UserPreferences): void {
     this.save(KEYS.preferences, prefs);

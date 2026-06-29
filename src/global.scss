@@ -139,6 +139,11 @@ ion-content {
   animation: fadeSlideUp 0.35s ease both;
 }
 
+// ─── Onboarding modal ──────────────────────────────────────────────────────────
+.onboarding-modal .modal-wrapper {
+  border-radius: 24px 24px 0 0;
+}
+
 // ─── Skeleton loader ───────────────────────────────────────────────────────────
 @keyframes shimmer {
   from { background-position: -400px 0; }

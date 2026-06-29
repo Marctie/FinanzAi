@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { StorageService } from '../../services/storage.service';
 import { AiService } from '../../services/ai.service';
 import { DEFAULT_CATEGORIES, getCategoriesByType } from '../../core/categories.constants';
@@ -19,11 +19,15 @@ export class AddTransactionPage implements OnInit {
   suggestedCategory = '';
   today = new Date().toISOString();
 
+  editId: string | null = null;
+  get isEditMode(): boolean { return !!this.editId; }
+
   constructor(
     private fb:      FormBuilder,
     private storage: StorageService,
     private ai:      AiService,
     private router:  Router,
+    private route:   ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -39,6 +43,23 @@ export class AddTransactionPage implements OnInit {
     this.form.get('type')!.valueChanges.subscribe(() => this.updateCategories());
     this.form.get('title')!.valueChanges.subscribe(v => this.onTitleChange(v));
     this.updateCategories();
+
+    // Edit mode: load existing transaction
+    this.editId = this.route.snapshot.queryParamMap.get('id');
+    if (this.editId) {
+      const tx = this.storage.transactionsSnapshot.find(t => t.id === this.editId);
+      if (tx) {
+        this.form.patchValue({
+          type:     tx.type,
+          amount:   tx.amount,
+          title:    tx.title,
+          category: tx.category,
+          date:     tx.date + 'T00:00:00',
+          notes:    tx.notes,
+        });
+        this.updateCategories();
+      }
+    }
   }
 
   private updateCategories(): void {
@@ -52,6 +73,7 @@ export class AddTransactionPage implements OnInit {
   }
 
   private onTitleChange(title: string): void {
+    if (this.isEditMode) return;
     if (title?.length > 2) {
       const type = this.form.get('type')!.value as 'income' | 'expense';
       const suggested = this.ai.suggestCategory(title, type);
@@ -69,27 +91,41 @@ export class AddTransactionPage implements OnInit {
 
   save(): void {
     if (this.form.invalid) return;
-
     const val = this.form.value;
-    const tx: Transaction = {
-      id:          crypto.randomUUID(),
-      type:        val.type,
-      amount:      parseFloat(val.amount),
-      currency:    'EUR',
-      category:    val.category,
-      date:        val.date.split('T')[0],
-      title:       val.title.trim(),
-      notes:       val.notes?.trim() ?? '',
-      isRecurring: false,
-      recurringId: null,
-      profileId:   'default',
-    };
+    const dateStr = typeof val.date === 'string' ? val.date.split('T')[0] : val.date;
 
-    this.storage.addTransaction(tx);
+    if (this.isEditMode) {
+      const original = this.storage.transactionsSnapshot.find(t => t.id === this.editId);
+      if (!original) return;
+      this.storage.updateTransaction({
+        ...original,
+        type:     val.type,
+        amount:   parseFloat(val.amount),
+        category: val.category,
+        date:     dateStr,
+        title:    val.title.trim(),
+        notes:    val.notes?.trim() ?? '',
+      });
+    } else {
+      const tx: Transaction = {
+        id:          crypto.randomUUID(),
+        type:        val.type,
+        amount:      parseFloat(val.amount),
+        currency:    'EUR',
+        category:    val.category,
+        date:        dateStr,
+        title:       val.title.trim(),
+        notes:       val.notes?.trim() ?? '',
+        isRecurring: false,
+        recurringId: null,
+        profileId:   'default',
+      };
+      this.storage.addTransaction(tx);
+    }
     this.router.navigate(['/tabs/transactions']);
   }
 
   cancel(): void {
-    this.router.navigate(['/tabs/dashboard']);
+    history.back();
   }
 }
