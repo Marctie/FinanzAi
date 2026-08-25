@@ -36,3 +36,24 @@
 - Verificata build (`ng build --configuration development`) senza errori.
 
 **Prossimi passi**: campo metodo di pagamento nel form transazioni, layout responsive per tablet, poi logo e privacy policy.
+
+## 2026-08-25 — Sessione 3: completamento fino alla pubblicazione
+
+Richiesta utente: continuare autonomamente fino al completamento di tutto quanto chiesto, senza check-in intermedi.
+
+**Modifiche applicate**:
+- Campo metodo di pagamento (contanti/carta debito/carta credito/bonifico/altro) su modello `Transaction`, form transazione, card transazione.
+- Layout responsive: `ion-content`/`ion-header` centrano il contenuto su tablet/desktop (≥720px, ≥1024px) invece di stirarlo edge-to-edge.
+- Nuovo logo (F + trend line ascendente) generato come SVG sorgente in `assets/`, poi rasterizzato con `@capacitor/assets` in tutte le icone Android (adaptive icon foreground/background, round, tutte le densità) e negli splash screen. Rimosso `src/assets/shapes.svg` (placeholder Ionic inutilizzato).
+- Privacy policy IT+EN scritta (`src/assets/legal/privacy-it.html`, `privacy-en.html`), inclusa nella build Angular e pubblicata via il workflow GitHub Actions già esistente nel repo (push su `main`, deploy automatico su GitHub Pages). Verificata raggiungibile live.
+- Keystore di release generato con `keytool` (PKCS12, 2048-bit RSA, validità 10000 giorni, subject generico senza dati personali) in `keystore/finanzai-release.jks`; password casuali generate con `openssl rand`, salvate in `keystore/.keystore-credentials.txt`. Entrambi esclusi da git tramite nuove regole in `.gitignore`.
+- `android/app/build.gradle`: aggiunto `signingConfigs.release` esplicito che legge da `android/keystore.properties` (anch'esso gitignored), applicato al `buildType release`.
+- Build AAB di release firmata con `./gradlew bundleRelease`, usando il JDK 21 di Android Studio (il JDK 25 di sistema non è compatibile con Gradle 8.14 — errore "Unsupported class file major version 69"). Firma verificata estraendo il certificato dal bundle con `unzip`/`openssl pkcs7` e confrontando l'impronta SHA-256 con quella del keystore: corrispondenza esatta.
+- Asset store generati: icona 512×512 e feature graphic 1024×500 (da SVG via `sharp`), screenshot reali dell'app (tema chiaro e scuro) catturati con Playwright contro `ng serve` in esecuzione locale — non mockup, vera UI dell'app. Tutto in `store-assets/`. `playwright` e `sharp` disinstallati dopo l'uso (erano strumenti one-off, non dipendenze dell'app).
+- Creata `docs/GUIDA_PUBBLICAZIONE_PLAY_STORE.md`: guida passo-passo per tutto ciò che resta da fare manualmente nella Play Console (creazione app, scheda store con testi pronti in italiano, content rating, Data Safety form, upload AAB, test chiuso, richiesta produzione).
+- Due commit pushati su `main` con autore generico `FinanzAI <finanzai.app@gmail.com>`, innescando due deploy automatici su GitHub Pages.
+
+**Aperto/da verificare con l'utente**:
+- L'indirizzo `finanzai.app@gmail.com` usato come contatto pubblico (privacy policy + scheda store) è un placeholder nello stile del progetto precedente — va confermato che esista davvero o sostituito.
+- Backup del keystore: attualmente esiste solo in locale, mai committato (corretto), ma non ancora copiato altrove dall'utente — rischio di perdita se non salvato.
+- Tutti i passaggi Play Console restano manuali (nessun accesso browser/account disponibile).
