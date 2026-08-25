@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { DEFAULT_CATEGORIES, getCategoryById } from '../core/categories.constants';
 import { Transaction } from '../models/transaction.model';
 import { AnalyticsService } from './analytics.service';
+import { CategoryService } from './category.service';
 
 export interface AiInsight {
   id: string;
@@ -13,11 +13,11 @@ export interface AiInsight {
 
 @Injectable({ providedIn: 'root' })
 export class AiService {
-  constructor(private analytics: AnalyticsService) {}
+  constructor(private analytics: AnalyticsService, private categories: CategoryService) {}
 
   suggestCategory(title: string, type: 'income' | 'expense'): string {
     const lower = title.toLowerCase();
-    const candidates = DEFAULT_CATEGORIES.filter(c => c.type === type || c.type === 'both');
+    const candidates = this.categories.getCategoriesByType(type);
     for (const cat of candidates) {
       if (cat.keywords.some(kw => lower.includes(kw))) return cat.id;
     }
@@ -69,7 +69,7 @@ export class AiService {
       }
     }
     if (topGrowthCat && topGrowth > 20) {
-      const catObj = getCategoryById(topGrowthCat);
+      const catObj = this.categories.getCategoryById(topGrowthCat);
       insights.push({
         id: 'top-growth',
         icon: catObj?.emoji ?? '💸',
@@ -141,7 +141,7 @@ export class AiService {
 
     const byCat    = this.analytics.expenseByCategory(thisTx);
     const topEntry = Object.entries(byCat).sort((a, b) => b[1] - a[1])[0];
-    const topCat   = topEntry ? getCategoryById(topEntry[0]) : null;
+    const topCat   = topEntry ? this.categories.getCategoryById(topEntry[0]) : null;
 
     let summary = `Questo mese hai guadagnato ${fmt(income)} e speso ${fmt(expense)}.`;
     if (saved > 0) summary += ` Hai risparmiato ${fmt(saved)}.`;

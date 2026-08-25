@@ -150,6 +150,40 @@ ion-content {
   --keyboard-offset: 0px;
 }
 
+// ─── Responsive: tablet/desktop — centra il contenuto invece di stirarlo ───────
+@media (min-width: 720px) {
+  ion-content {
+    --padding-start: max(20px, calc((100% - 680px) / 2));
+    --padding-end:   max(20px, calc((100% - 680px) / 2));
+  }
+}
+
+@media (min-width: 1024px) {
+  ion-content {
+    --padding-start: max(24px, calc((100% - 840px) / 2));
+    --padding-end:   max(24px, calc((100% - 840px) / 2));
+  }
+
+  ion-tab-bar {
+    max-width: 840px;
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 720px) {
+  ion-header ion-toolbar {
+    --padding-start: max(20px, calc((100% - 680px) / 2));
+    --padding-end:   max(20px, calc((100% - 680px) / 2));
+  }
+}
+
+@media (min-width: 1024px) {
+  ion-header ion-toolbar {
+    --padding-start: max(24px, calc((100% - 840px) / 2));
+    --padding-end:   max(24px, calc((100% - 840px) / 2));
+  }
+}
+
 // ─── Safe area for modals / full screens ───────────────────────────────────────
 .onboarding-modal .modal-wrapper {
   border-radius: 24px 24px 0 0;

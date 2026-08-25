@@ -4,10 +4,6 @@ const config: CapacitorConfig = {
   appId:   'com.finanzai.app',
   appName: 'FinanzAI',
   webDir:  'www',
-  server: {
-    url: 'https://marctie.github.io/FinanzAi',
-    androidScheme: 'https',
-  },
   plugins: {
     StatusBar: {
       style:           'DEFAULT',

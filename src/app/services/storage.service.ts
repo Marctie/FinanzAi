@@ -102,6 +102,23 @@ export class StorageService {
     this.prefs$.next(prefs);
   }
 
+  // ─── Bulk restore (backup) ─────────────────────────────────────────────────
+  restoreAll(data: {
+    transactions: Transaction[];
+    budgets: Budget[];
+    goals: Goal[];
+    preferences: UserPreferences;
+  }): void {
+    this.save(KEYS.transactions, data.transactions);
+    this.save(KEYS.budgets,      data.budgets);
+    this.save(KEYS.goals,        data.goals);
+    this.save(KEYS.preferences,  data.preferences);
+    this.transactions$.next(data.transactions);
+    this.budgets$.next(data.budgets);
+    this.goals$.next(data.goals);
+    this.prefs$.next(data.preferences);
+  }
+
   // ─── Internal ──────────────────────────────────────────────────────────────
   private save(key: string, value: unknown): void {
     localStorage.setItem(key, JSON.stringify(value));

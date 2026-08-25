@@ -1,0 +1,56 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="dismiss()" fill="clear">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ isEdit ? 'Modifica categoria' : 'Nuova categoria' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="save()" [disabled]="form.invalid" fill="solid" shape="round" color="primary">
+        Salva
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [formGroup]="form" class="ion-padding">
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="text-outline" slot="start" color="medium"></ion-icon>
+    <ion-input placeholder="Nome categoria" formControlName="name"></ion-input>
+  </ion-item>
+
+  <div class="segment-row">
+    <button type="button" class="segment-opt" [class.active]="form.get('type')?.value === 'expense'" (click)="setType('expense')">Uscita</button>
+    <button type="button" class="segment-opt" [class.active]="form.get('type')?.value === 'income'" (click)="setType('income')">Entrata</button>
+  </div>
+
+  <p class="picker-label">Icona</p>
+  <div class="emoji-grid">
+    <button type="button" *ngFor="let e of emojiChoices" class="emoji-opt" [class.active]="form.get('emoji')?.value === e" (click)="setEmoji(e)">
+      {{ e }}
+    </button>
+  </div>
+
+  <p class="picker-label">Colore</p>
+  <div class="color-grid">
+    <button type="button" *ngFor="let c of colorChoices" class="color-opt" [class.active]="form.get('color')?.value === c" [style.background]="c" (click)="setColor(c)"></button>
+  </div>
+
+  <div class="preview-row">
+    <span class="preview-badge" [style.background]="form.get('color')?.value + '22'" [style.color]="form.get('color')?.value">
+      {{ form.get('emoji')?.value }} {{ form.get('name')?.value || 'Anteprima' }}
+    </span>
+  </div>
+
+  <ion-button
+    *ngIf="isEdit"
+    expand="block"
+    fill="outline"
+    color="danger"
+    (click)="delete()"
+    style="margin-top:24px">
+    <ion-icon name="trash-outline" slot="start"></ion-icon>
+    Elimina categoria
+  </ion-button>
+</ion-content>

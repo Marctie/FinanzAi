@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { Budget } from '../../../models/budget.model';
-import { getCategoriesByType } from '../../../core/categories.constants';
+import { CategoryService } from '../../../services/category.service';
 import { Category } from '../../../models/category.model';
 
 @Component({
@@ -16,10 +16,10 @@ export class BudgetFormComponent implements OnInit {
   form!: FormGroup;
   categories: Category[] = [];
 
-  constructor(private fb: FormBuilder, private modalCtrl: ModalController) {}
+  constructor(private fb: FormBuilder, private modalCtrl: ModalController, private categorySvc: CategoryService) {}
 
   ngOnInit(): void {
-    this.categories = getCategoriesByType('expense');
+    this.categories = this.categorySvc.getCategoriesByType('expense');
     this.form = this.fb.group({
       categoryId:     [this.budget?.categoryId ?? '', Validators.required],
       amount:         [this.budget?.amount ?? null, [Validators.required, Validators.min(1)]],

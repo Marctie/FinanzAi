@@ -1,0 +1,40 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/settings"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Categorie</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="settings-group animate-in">
+    <p class="section-title">Uscite</p>
+    <ion-list class="surface-card" lines="inset">
+      <ion-item *ngFor="let cat of expenseCategories" [button]="cat.isCustom" (click)="editCategory(cat)">
+        <span slot="start" class="cat-emoji" [style.background]="cat.color + '22'">{{ cat.emoji }}</span>
+        <ion-label>{{ cat.name }}</ion-label>
+        <ion-note *ngIf="!cat.isCustom" slot="end">Predefinita</ion-note>
+        <ion-icon *ngIf="cat.isCustom" name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <div class="settings-group animate-in">
+    <p class="section-title">Entrate</p>
+    <ion-list class="surface-card" lines="inset">
+      <ion-item *ngFor="let cat of incomeCategories" [button]="cat.isCustom" (click)="editCategory(cat)">
+        <span slot="start" class="cat-emoji" [style.background]="cat.color + '22'">{{ cat.emoji }}</span>
+        <ion-label>{{ cat.name }}</ion-label>
+        <ion-note *ngIf="!cat.isCustom" slot="end">Predefinita</ion-note>
+        <ion-icon *ngIf="cat.isCustom" name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="addCategory()" color="primary">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

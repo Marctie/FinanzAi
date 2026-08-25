@@ -51,18 +51,56 @@
     </ion-list>
   </div>
 
-  <!-- Dati -->
+  <!-- Categorie -->
   <div class="settings-group animate-in">
-    <p class="section-title">Dati</p>
+    <p class="section-title">Categorie</p>
     <ion-list class="surface-card" lines="inset">
-      <ion-item button (click)="exportCsv()">
-        <ion-icon name="download-outline" slot="start" color="primary"></ion-icon>
+      <ion-item button routerLink="/tabs/categories" lines="none">
+        <ion-icon name="pricetags-outline" slot="start" color="primary"></ion-icon>
         <ion-label>
-          <h3>Esporta CSV</h3>
-          <p>Scarica tutte le transazioni</p>
+          <h3>Gestisci categorie</h3>
+          <p>Crea, modifica o elimina categorie personalizzate</p>
         </ion-label>
         <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
       </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Dati -->
+  <div class="settings-group animate-in">
+    <p class="section-title">Backup e dati</p>
+    <ion-list class="surface-card" lines="inset">
+      <ion-item button (click)="exportBackup()">
+        <ion-icon name="cloud-download-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>
+          <h3>Esporta backup completo</h3>
+          <p>Salva un file JSON con tutti i tuoi dati</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+      </ion-item>
+      <ion-item button [disabled]="isImporting" (click)="backupFileInput.click()">
+        <ion-icon name="cloud-upload-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>
+          <h3>Ripristina da backup</h3>
+          <p>Sovrascrive i dati attuali con quelli del file</p>
+        </ion-label>
+        <ion-spinner *ngIf="isImporting" slot="end" name="crescent"></ion-spinner>
+        <ion-icon *ngIf="!isImporting" name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+      </ion-item>
+      <ion-item button (click)="exportCsv()" lines="none">
+        <ion-icon name="download-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>
+          <h3>Esporta CSV</h3>
+          <p>Scarica le transazioni per fogli di calcolo</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+      </ion-item>
+    </ion-list>
+    <input #backupFileInput type="file" accept="application/json" hidden (change)="onBackupFileSelected($event)" />
+  </div>
+
+  <div class="settings-group animate-in">
+    <ion-list class="surface-card" lines="inset">
       <ion-item button (click)="clearData()" lines="none">
         <ion-icon name="trash-outline" slot="start" color="danger"></ion-icon>
         <ion-label color="danger">
@@ -72,29 +110,6 @@
       </ion-item>
     </ion-list>
   </div>
-
-  <!-- Info -->
-  <!-- <div class="settings-group animate-in">
-    <p class="section-title">Info</p>
-    <ion-list class="surface-card" lines="inset">
-      <ion-item button (click)="openDeveloper()">
-        <ion-icon name="person-circle-outline" slot="start" color="primary"></ion-icon>
-        <ion-label>
-          <h3>Sviluppatore</h3>
-          <p>Marco Peluso</p>
-        </ion-label>
-        <ion-icon name="open-outline" slot="end" color="medium"></ion-icon>
-      </ion-item>
-      <ion-item button (click)="openGithub()" lines="none">
-        <ion-icon name="logo-github" slot="start" color="primary"></ion-icon>
-        <ion-label>
-          <h3>Repository GitHub</h3>
-          <p>Marctie/FinanzAi</p>
-        </ion-label>
-        <ion-icon name="open-outline" slot="end" color="medium"></ion-icon>
-      </ion-item>
-    </ion-list>
-  </div> -->
 
   <app-footer></app-footer>
 </ion-content>

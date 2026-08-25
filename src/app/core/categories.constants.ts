@@ -149,11 +149,3 @@ export const DEFAULT_CATEGORIES: Category[] = [
     isCustom: false,
   },
 ];
-
-export function getCategoryById(id: string): Category | undefined {
-  return DEFAULT_CATEGORIES.find(c => c.id === id);
-}
-
-export function getCategoriesByType(type: 'income' | 'expense'): Category[] {
-  return DEFAULT_CATEGORIES.filter(c => c.type === type || c.type === 'both');
-}

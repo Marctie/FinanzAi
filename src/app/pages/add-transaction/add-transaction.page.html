@@ -82,6 +82,13 @@
     </ion-item>
 
     <ion-item class="form-item" lines="none">
+      <ion-icon name="wallet-outline" slot="start" color="medium"></ion-icon>
+      <ion-select placeholder="Metodo di pagamento" formControlName="paymentMethod" interface="action-sheet">
+        <ion-select-option *ngFor="let pm of paymentMethods" [value]="pm.id">{{ pm.label }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item class="form-item" lines="none">
       <ion-icon name="chatbubble-outline" slot="start" color="medium"></ion-icon>
       <ion-textarea
         placeholder="Note (opzionale)"

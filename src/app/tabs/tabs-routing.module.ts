@@ -36,6 +36,10 @@ const routes: Routes = [
         loadChildren: () => import('../pages/settings/settings.module').then(m => m.SettingsPageModule),
       },
       {
+        path: 'categories',
+        loadChildren: () => import('../pages/categories/categories.module').then(m => m.CategoriesPageModule),
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',

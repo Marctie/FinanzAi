@@ -1,0 +1,81 @@
+.form-item {
+  --background: var(--surface-card, transparent);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.segment-row {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.segment-opt {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--ion-color-medium, #ccc);
+  background: transparent;
+  color: var(--ion-text-color);
+  font-weight: 500;
+
+  &.active {
+    background: var(--ion-color-primary);
+    border-color: var(--ion-color-primary);
+    color: #fff;
+  }
+}
+
+.picker-label {
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.7;
+  margin: 16px 0 8px;
+}
+
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.emoji-opt {
+  font-size: 22px;
+  padding: 10px 0;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background: rgba(128, 128, 128, 0.08);
+
+  &.active {
+    border-color: var(--ion-color-primary);
+  }
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+
+.color-opt {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 3px solid transparent;
+
+  &.active {
+    border-color: var(--ion-text-color);
+  }
+}
+
+.preview-row {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.preview-badge {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 15px;
+}

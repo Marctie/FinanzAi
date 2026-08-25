@@ -3,9 +3,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StorageService } from '../../services/storage.service';
 import { AiService } from '../../services/ai.service';
-import { DEFAULT_CATEGORIES, getCategoriesByType } from '../../core/categories.constants';
+import { CategoryService } from '../../services/category.service';
 import { Category } from '../../models/category.model';
-import { Transaction } from '../../models/transaction.model';
+import { Transaction, PAYMENT_METHODS } from '../../models/transaction.model';
 import { Capacitor } from '@capacitor/core';
 import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 
@@ -18,6 +18,7 @@ import { Haptics, ImpactStyle, NotificationType } from '@capacitor/haptics';
 export class AddTransactionPage implements OnInit {
   form!: FormGroup;
   categories: Category[] = [];
+  paymentMethods = PAYMENT_METHODS;
   suggestedCategory = '';
   today = new Date().toISOString();
 
@@ -25,11 +26,12 @@ export class AddTransactionPage implements OnInit {
   get isEditMode(): boolean { return !!this.editId; }
 
   constructor(
-    private fb:      FormBuilder,
-    private storage: StorageService,
-    private ai:      AiService,
-    private router:  Router,
-    private route:   ActivatedRoute,
+    private fb:         FormBuilder,
+    private storage:    StorageService,
+    private ai:         AiService,
+    private categorySvc: CategoryService,
+    private router:     Router,
+    private route:      ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -39,6 +41,7 @@ export class AddTransactionPage implements OnInit {
       title:    ['', Validators.required],
       category: ['', Validators.required],
       date:     [this.today, Validators.required],
+      paymentMethod: ['carta-debito'],
       notes:    [''],
     });
 
@@ -57,6 +60,7 @@ export class AddTransactionPage implements OnInit {
           title:    tx.title,
           category: tx.category,
           date:     tx.date + 'T00:00:00',
+          paymentMethod: tx.paymentMethod ?? 'carta-debito',
           notes:    tx.notes,
         });
         this.updateCategories();
@@ -66,7 +70,7 @@ export class AddTransactionPage implements OnInit {
 
   private updateCategories(): void {
     const type = this.form.get('type')!.value as 'income' | 'expense';
-    this.categories = getCategoriesByType(type);
+    this.categories = this.categorySvc.getCategoriesByType(type);
     const current = this.form.get('category')!.value;
     const valid = this.categories.some(c => c.id === current);
     if (!valid) {
@@ -79,7 +83,7 @@ export class AddTransactionPage implements OnInit {
     if (title?.length > 2) {
       const type = this.form.get('type')!.value as 'income' | 'expense';
       const suggested = this.ai.suggestCategory(title, type);
-      const cat = DEFAULT_CATEGORIES.find(c => c.id === suggested);
+      const cat = this.categorySvc.getCategoryById(suggested);
       if (suggested !== this.form.get('category')!.value && cat) {
         this.suggestedCategory = cat.name;
         this.form.get('category')!.setValue(suggested);
@@ -110,6 +114,7 @@ export class AddTransactionPage implements OnInit {
         category: val.category,
         date:     dateStr,
         title:    val.title.trim(),
+        paymentMethod: val.paymentMethod,
         notes:    val.notes?.trim() ?? '',
       });
     } else {
@@ -121,6 +126,7 @@ export class AddTransactionPage implements OnInit {
         category:    val.category,
         date:        dateStr,
         title:       val.title.trim(),
+        paymentMethod: val.paymentMethod,
         notes:       val.notes?.trim() ?? '',
         isRecurring: false,
         recurringId: null,

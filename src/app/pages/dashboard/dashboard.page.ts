@@ -4,7 +4,7 @@ import { StorageService } from '../../services/storage.service';
 import { AnalyticsService, MonthlyStats } from '../../services/analytics.service';
 import { AiService, AiInsight } from '../../services/ai.service';
 import { Transaction } from '../../models/transaction.model';
-import { getCategoryById } from '../../core/categories.constants';
+import { CategoryService } from '../../services/category.service';
 
 Chart.register(...registerables);
 
@@ -43,6 +43,7 @@ export class DashboardPage implements OnInit, OnDestroy {
     private storage:   StorageService,
     private analytics: AnalyticsService,
     private ai:        AiService,
+    private categorySvc: CategoryService,
   ) {}
 
   ngOnInit(): void {
@@ -89,7 +90,7 @@ export class DashboardPage implements OnInit, OnDestroy {
 
     this.categorySlices = Object.entries(byCategory)
       .map(([id, amount]) => {
-        const cat = getCategoryById(id);
+        const cat = this.categorySvc.getCategoryById(id);
         return {
           name:   cat?.name  ?? id,
           emoji:  cat?.emoji ?? '💸',

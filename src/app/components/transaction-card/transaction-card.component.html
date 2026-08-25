@@ -9,6 +9,10 @@
         <span class="tx-category">{{ category?.name }}</span>
         <span class="tx-dot">·</span>
         <span class="tx-date">{{ dateFormatted }}</span>
+        <ng-container *ngIf="paymentMethodLabel">
+          <span class="tx-dot">·</span>
+          <span class="tx-payment">{{ paymentMethodLabel }}</span>
+        </ng-container>
         <ng-container *ngIf="transaction.isRecurring">
           <span class="tx-dot">·</span>
           <ion-icon name="repeat-outline" class="recurring-icon"></ion-icon>

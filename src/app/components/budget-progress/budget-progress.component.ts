@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { Budget } from '../../models/budget.model';
-import { getCategoryById } from '../../core/categories.constants';
 import { AnalyticsService } from '../../services/analytics.service';
+import { CategoryService } from '../../services/category.service';
 
 @Component({
   selector: 'app-budget-progress',
@@ -17,7 +17,7 @@ export class BudgetProgressComponent implements OnChanges {
   percentage = 0;
   progressColor = 'var(--color-positive)';
 
-  constructor(private analytics: AnalyticsService) {}
+  constructor(private analytics: AnalyticsService, private categorySvc: CategoryService) {}
 
   ngOnChanges(): void {
     this.percentage = this.budget ? Math.min(Math.round((this.spent / this.budget.amount) * 100), 100) : 0;
@@ -27,7 +27,7 @@ export class BudgetProgressComponent implements OnChanges {
       'var(--color-positive)';
   }
 
-  get category() { return getCategoryById(this.budget?.categoryId); }
+  get category() { return this.categorySvc.getCategoryById(this.budget?.categoryId); }
 
   get spentFormatted(): string  { return this.analytics.formatCurrency(this.spent); }
   get budgetFormatted(): string { return this.analytics.formatCurrency(this.budget?.amount ?? 0); }

@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { StorageService } from '../../services/storage.service';
 import { AnalyticsService } from '../../services/analytics.service';
 import { Transaction } from '../../models/transaction.model';
-import { DEFAULT_CATEGORIES } from '../../core/categories.constants';
+import { CategoryService } from '../../services/category.service';
 import { Category } from '../../models/category.model';
 
 type FilterType = 'all' | 'income' | 'expense';
@@ -30,12 +30,13 @@ export class TransactionsPage implements OnInit {
   constructor(
     private storage:   StorageService,
     private analytics: AnalyticsService,
+    private categorySvc: CategoryService,
     private router:    Router,
   ) {}
 
   ngOnInit(): void {
     this.buildMonthOptions();
-    this.expenseCategories = DEFAULT_CATEGORIES.filter(c => c.type === 'expense');
+    this.expenseCategories = this.categorySvc.getCategoriesByType('expense');
 
     this.storage.transactions.subscribe(txs => {
       this.allTransactions = [...txs].sort((a, b) => b.date.localeCompare(a.date));

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { ToastController } from '@ionic/angular';
+import { ToastController, AlertController } from '@ionic/angular';
 import { ThemeService } from '../../services/theme.service';
 import { StorageService } from '../../services/storage.service';
 import { AnalyticsService } from '../../services/analytics.service';
+import { BackupService } from '../../services/backup.service';
 import { ThemeMode } from '../../models/user-preferences.model';
 
 @Component({
@@ -14,12 +15,15 @@ import { ThemeMode } from '../../models/user-preferences.model';
 export class SettingsPage implements OnInit {
   currentTheme: ThemeMode = 'system';
   version = '1.0.0';
+  isImporting = false;
 
   constructor(
     private themeService: ThemeService,
     private storage:      StorageService,
     private analytics:    AnalyticsService,
+    private backup:       BackupService,
     private toast:        ToastController,
+    private alertCtrl:    AlertController,
   ) {}
 
   ngOnInit(): void {
@@ -60,19 +64,50 @@ export class SettingsPage implements OnInit {
     this.showToast(`Esportate ${txs.length} transazioni.`, 'success');
   }
 
+  async exportBackup(): Promise<void> {
+    await this.backup.exportBackup();
+    this.showToast('Backup creato e scaricato.', 'success');
+  }
+
+  async onBackupFileSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const alert = await this.alertCtrl.create({
+      header: 'Ripristina backup',
+      message: 'Il ripristino sovrascriverà tutti i dati attuali con quelli del file selezionato. Continuare?',
+      buttons: [
+        { text: 'Annulla', role: 'cancel', handler: () => { input.value = ''; } },
+        {
+          text: 'Ripristina',
+          role: 'destructive',
+          handler: async () => {
+            this.isImporting = true;
+            try {
+              const result = await this.backup.importBackup(file);
+              this.showToast(
+                `Ripristinati ${result.transactions} movimenti, ${result.budgets} budget, ${result.goals} obiettivi, ${result.categories} categorie personalizzate.`,
+                'success',
+              );
+            } catch (e) {
+              this.showToast((e as Error).message ?? 'Errore durante il ripristino del backup.', 'danger');
+            } finally {
+              this.isImporting = false;
+              input.value = '';
+            }
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
   clearData(): void {
     if (confirm('Vuoi davvero eliminare tutti i dati? Questa azione non è reversibile.')) {
       localStorage.clear();
       window.location.reload();
     }
-  }
-
-  openDeveloper(): void {
-    window.open('https://marctie.github.io/marco.peluso/home', '_blank', 'noopener,noreferrer');
-  }
-
-  openGithub(): void {
-    window.open('https://github.com/Marctie/FinanzAi', '_blank', 'noopener,noreferrer');
   }
 
   private async showToast(msg: string, color: string): Promise<void> {
