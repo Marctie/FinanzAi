@@ -9,8 +9,8 @@ Questa guida copre tutti i passaggi che devi fare **tu manualmente** nella Play 
 | File AAB firmato | `android/app/build/outputs/bundle/release/app-release.aab` |
 | Keystore di release | `keystore/finanzai-release.jks` (⚠️ **non è su git, fai subito un backup altrove** — se lo perdi non potrai più aggiornare l'app) |
 | Password keystore | `keystore/.keystore-credentials.txt` (⚠️ **non è su git**, spostala in un password manager e poi cancella il file) |
-| Privacy policy IT | https://marctie.github.io/FinanzAi/assets/legal/privacy-it.html |
-| Privacy policy EN | https://marctie.github.io/FinanzAi/assets/legal/privacy-en.html |
+| Privacy policy IT | https://marctie.github.io/FinanzAI-Privacy/ |
+| Privacy policy EN | https://marctie.github.io/FinanzAI-Privacy/en.html |
 | Icona store 512×512 | `store-assets/icon-512.png` |
 | Feature graphic 1024×500 | `store-assets/feature-graphic.png` |
 | Screenshot (chiaro e scuro) | `store-assets/screenshots/*.png` |
@@ -70,7 +70,7 @@ Si adatta automaticamente al tema del tuo dispositivo.
 
 **Categoria**: Finanza
 **Dettagli di contatto**: email finanzai.app@gmail.com (vedi nota sotto)
-**Privacy policy URL**: https://marctie.github.io/FinanzAi/assets/legal/privacy-it.html
+**Privacy policy URL**: https://marctie.github.io/FinanzAI-Privacy/
 
 **Grafica da caricare**:
 - Icona app: `store-assets/icon-512.png`
