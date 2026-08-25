@@ -54,6 +54,12 @@
 - ✅ **Backup automatico silenzioso**: `BackupService.autoBackup()` viene eseguito ad ogni avvio dell'app (senza alcuna interazione utente, salvato in `localStorage['finanzai_auto_backup']` con checksum) e anche subito prima di operazioni distruttive ("Cancella tutti i dati", "Rimuovi dati di esempio"). In Impostazioni è visibile la data/ora dell'ultimo backup automatico e un'azione per ripristinarlo. La cancellazione totale dati (`clearData()`) ora preserva deliberatamente questo snapshot come ultima rete di sicurezza, anche dopo un reset completo.
 - ✅ Build firmata rigenerata e riverificata con openssl dopo tutte queste modifiche (stessa impronta del keystore).
 
+### Sessione 4 (continua) — pubblicazione guidata avviata
+- App creata nella Play Console (`com.finanzai.app`), scheda store compilata, tutte le dichiarazioni obbligatorie completate (privacy, annunci, content rating, data safety, pubblico target 18+, funzionalità finanziarie, ID pubblicità, app salute) — vedi dettaglio completo in [CHATLOG.md](./CHATLOG.md).
+- Screenshot store aggiornati con catture reali da emulatore (non più mockup browser).
+- Chiarito che serve il **Test chiuso** (non l'interno) per sbloccare la produzione — minimo 12 tester per 14 giorni continuativi, requisito Google per account nuovi. L'utente aveva configurato solo il test interno; corretto con "Promuovi release" verso il canale Test chiuso.
+- Link store atteso: `https://play.google.com/store/apps/details?id=com.finanzai.app` (non ancora live — normale, richiede prima il completamento del test chiuso + revisione Google).
+
 ### ⚠️ Cose che restano da fare (richiedono te, non automatizzabili)
 1. **Backup del keystore**: `keystore/finanzai-release.jks` e la password in `keystore/.keystore-credentials.txt` non sono su git (giustamente). **Devi copiarli tu in un posto sicuro (password manager + backup offline) prima di continuare** — se li perdi non potrai più pubblicare aggiornamenti della stessa app.
 2. ~~Email di contatto~~ — risolto: l'utente ha scelto `marco.p.develop@gmail.com` come unico dato di contatto da esporre pubblicamente (privacy policy + scheda store).

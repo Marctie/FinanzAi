@@ -80,3 +80,31 @@ Richiesta utente: continuare autonomamente fino al completamento di tutto quanto
 - Installato sull'emulatore, avviato, catturati screenshot reali (non browser): onboarding, dashboard con banner dati demo, grafici — tutto funzionante correttamente nel runtime Android nativo.
 
 **Prossimi passi**: guida passo-passo alla pubblicazione su Google Play Console (vedi [GUIDA_PUBBLICAZIONE_PLAY_STORE.md](./GUIDA_PUBBLICAZIONE_PLAY_STORE.md)), avviata su richiesta dell'utente in questa sessione.
+
+## 2026-08-25 — Sessione 4 (continua): test su emulatore reale + avvio pubblicazione guidata
+
+**Test nativo su emulatore reale**: rilevato l'emulatore Android già avviato dall'utente (`emulator-5554`) tramite `adb devices`. Compilato `app-release.apk` (variante APK del bundle per installazione diretta), firma verificata con `apksigner verify --print-certs` (schema v2, impronta SHA-256 identica al keystore). Installato e avviato sull'emulatore: onboarding, dashboard con banner dati demo, navigazione tra le tab — tutto funzionante nel runtime Android nativo, non solo nel browser.
+
+**Screenshot store rifatti da emulatore reale**: sostituiti i 5 screenshot precedenti (catturati via Playwright/browser) con catture reali dall'emulatore via `adb shell screencap`, navigando l'app con `adb shell input tap`: dashboard (con banner demo dismissato per un'immagine pulita), movimenti, budget, insights, nuova transazione. Rimossi i due screenshot dark-mode da browser (non sostituiti con equivalenti nativi, il set di 5 è comunque sopra il minimo richiesto da Google Play). Committati e pushati.
+
+**Guida passo-passo Play Console avviata**: l'utente aveva già un account sviluppatore attivo. Percorso seguito insieme, schermata per schermata (screenshot forniti dall'utente, risposte fornite in tempo reale):
+- Creazione app: nome pacchetto `com.finanzai.app` (deve combaciare esattamente con l'applicationId), lingua predefinita cambiata da inglese a italiano
+- Creazione release di test: caricamento AAB da `android/app/build/outputs/bundle/release/app-release.aab`, nome release e note di rilascio (formato con tag `<it-IT>...</it-IT>`)
+- Scheda store principale: nome, descrizione breve/completa, categoria "Finanza", contatti, grafica (icona 512, feature graphic, screenshot)
+- Norme sulla privacy: URL `https://marctie.github.io/FinanzAI-Privacy/`
+- Dettagli di accesso: "No" (nessuna parte dell'app soggetta a limitazioni — niente login/account/pagamenti)
+- Annunci: "No" (nessuna pubblicità)
+- Classificazione dei contenuti (questionario IARC completo): categoria "Tutti gli altri tipi di app", tutte le risposte "No" (nessun contenuto per adulti, condivisione contenuti utente, contenuto online dinamico, prodotti riservati adulti, posizione condivisa, acquisti di beni digitali, ricompense/criptovalute)
+- Pubblico di destinazione: solo "18 o più" (evita deliberatamente le Play Families Policies, non pertinenti per un'app di finanza personale)
+- Sicurezza dei dati: "No" (l'app non raccoglie né condivide alcun dato utente)
+- App governative: "No"
+- Funzionalità finanziarie: "La mia app non fornisce funzionalità finanziarie" (è un tracciamento personale manuale, non un servizio finanziario operativo)
+- ID pubblicità: "No" (nessun SDK con AD_ID)
+- App per la salute: "La mia app non ha funzionalità relative alla salute"
+- Categoria app store: "Finanza"
+
+**Chiarimento test interno vs test chiuso**: spiegato che il test chiuso (non quello interno) è il prerequisito obbligatorio di Google per account sviluppatore nuovi (minimo 12 tester per 14 giorni continuativi) prima di poter richiedere l'accesso alla produzione. L'utente aveva configurato solo il test interno per errore — soluzione data: usare "Promuovi release" nella pagina della release di Test interno per spostarla sul canale Test chiuso senza dover ricaricare l'AAB, oppure ricaricarlo direttamente in Test → Test chiuso.
+
+**Memoria aggiornata**: il file di memoria `play_console_listing_qa.md` (fuori dal repository, in `~/.claude/projects/.../memory/`) è stato aggiornato progressivamente con tutte queste domande/risposte, pensato per essere riutilizzato in futuri progetti con lo stesso profilo (nessun account, dati locali, no pubblicità).
+
+**Stato a fine sessione**: l'utente ha completato la configurazione (a suo dire) e sta ora aspettando/agendo lato Play Console. Nessuna modifica al codice in questa parte della sessione — solo assistenza sulla configurazione della Play Console. Nessun commit necessario oltre a quelli già fatti.
