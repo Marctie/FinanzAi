@@ -69,7 +69,7 @@ Si adatta automaticamente al tema del tuo dispositivo.
 ```
 
 **Categoria**: Finanza
-**Dettagli di contatto**: email finanzai.app@gmail.com (vedi nota sotto)
+**Dettagli di contatto**: email marco.p.develop@gmail.com
 **Privacy policy URL**: https://marctie.github.io/FinanzAI-Privacy/
 
 **Grafica da caricare**:
@@ -77,7 +77,7 @@ Si adatta automaticamente al tema del tuo dispositivo.
 - Feature graphic: `store-assets/feature-graphic.png`
 - Screenshot telefono (minimo 2, consigliati 4-8): tutti i file in `store-assets/screenshots/`
 
-> ⚠️ **Nota sull'email di contatto**: nella privacy policy e nella scheda store ho usato `finanzai.app@gmail.com` come indirizzo dedicato all'app (non personale), sullo stesso modello usato per Device Test Pro. **Verifica che questa casella esista davvero e sia raggiungibile da te**, oppure dimmi quale indirizzo dedicato preferisci usare e aggiorno privacy policy e scheda store di conseguenza.
+> Nota: `marco.p.develop@gmail.com` è l'email di contatto scelta esplicitamente dall'utente per ricevere feedback — usata sia nella privacy policy che nella scheda store.
 
 ## 4. Content rating (classificazione dei contenuti)
 
