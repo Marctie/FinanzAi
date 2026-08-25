@@ -57,3 +57,26 @@ Richiesta utente: continuare autonomamente fino al completamento di tutto quanto
 - L'indirizzo `finanzai.app@gmail.com` usato come contatto pubblico (privacy policy + scheda store) è un placeholder nello stile del progetto precedente — va confermato che esista davvero o sostituito.
 - Backup del keystore: attualmente esiste solo in locale, mai committato (corretto), ma non ancora copiato altrove dall'utente — rischio di perdita se non salvato.
 - Tutti i passaggi Play Console restano manuali (nessun accesso browser/account disponibile).
+
+## 2026-08-25 — Sessione 4: rifiniture, verifica su emulatore reale, avvio pubblicazione
+
+**Verifica repository privato**: `Marctie/FinanzAi` è privato → GitHub Pages non poteva pubblicare la privacy policy pubblicamente. Creato repository pubblico dedicato `Marctie/FinanzAI-Privacy` (utente lo ha creato, io ho pushato `index.html`/`en.html`). L'utente ha attivato GitHub Pages manualmente (Settings → Pages → Deploy from branch → main/root, unico passaggio non automatizzabile senza token API). Verificato online (HTTP 200) su entrambe le lingue.
+
+**Email di contatto**: su richiesta esplicita dell'utente, sostituito il placeholder `finanzai.app@gmail.com` con `marco.p.develop@gmail.com` (unico dato personale che l'utente ha scelto consapevolmente di esporre come contatto pubblico) in privacy policy IT/EN e guida Play Console. Rimossa la dicitura fuorviante "indirizzo distinto da contatto personale" dato che ora lo è di proposito.
+
+**Controllo SDK Android**: richiesto dall'utente, verificato che `compileSdk`/`targetSdk` erano già alla versione 36 (più recente disponibile), impostati dal template Capacitor 8 di base — nessuna modifica necessaria.
+
+**Bug trovato e corretto — Splash screen inerte**: `capacitor.config.ts` conteneva una configurazione per `@capacitor/splash-screen`, ma il plugin non era mai stato installato via npm (config "morta", senza alcun effetto). Installato correttamente, sincronizzato con Android, e collegato in `app.component.ts`: la splash nativa (con il nuovo logo) resta visibile finché `StorageService.init()` non è completo, poi si chiude con una dissolvenza di 250ms.
+
+**Nuove funzionalità su richiesta esplicita dell'utente**:
+- **Guida in-app**: nuova pagina `/tabs/guide` con FAQ ad accordion (6 sezioni: movimenti, categorie, budget, obiettivi, analisi, dati/backup), raggiungibile da Impostazioni.
+- **Gestione dati dimostrativi**: banner in Home visibile quando sono ancora attivi i dati precaricati, con azione per rimuoverli e iniziare a usare l'app con dati reali (con backup di sicurezza automatico prima della cancellazione).
+- **Backup automatico silenzioso**: eseguito ad ogni avvio dell'app (nessuna interazione utente, salvato in locale con verifica di integrità) e prima di ogni operazione distruttiva. Sopravvive anche a "Cancella tutti i dati". Visibile/ripristinabile da Impostazioni.
+
+**Verifica reale su emulatore Android** (richiesta esplicita dell'utente, non solo screenshot da browser come nelle sessioni precedenti):
+- Rilevato l'emulatore già avviato dall'utente (`emulator-5554`, Android via `adb devices`).
+- Compilato `app-release.apk` (variante APK del bundle, per installazione diretta via adb — l'AAB non è installabile direttamente).
+- Firma verificata con `apksigner verify --print-certs`: schema v2, impronta SHA-256 identica al keystore (`43:4D:95:18:FA:26:E8:C4:73:3F:50:7A:7E:25:58:AB:36:93:35:F3:E7:31:EA:92:12:A5:C3:3B:FA:CD:8B:2C`).
+- Installato sull'emulatore, avviato, catturati screenshot reali (non browser): onboarding, dashboard con banner dati demo, grafici — tutto funzionante correttamente nel runtime Android nativo.
+
+**Prossimi passi**: guida passo-passo alla pubblicazione su Google Play Console (vedi [GUIDA_PUBBLICAZIONE_PLAY_STORE.md](./GUIDA_PUBBLICAZIONE_PLAY_STORE.md)), avviata su richiesta dell'utente in questa sessione.
