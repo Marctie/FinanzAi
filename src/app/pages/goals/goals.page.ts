@@ -2,12 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController, AlertController } from '@ionic/angular';
 import { StorageService } from '../../services/storage.service';
 import { AnalyticsService } from '../../services/analytics.service';
+import { CategoryService } from '../../services/category.service';
 import { Goal } from '../../models/goal.model';
 import { GoalFormComponent } from './goal-form/goal-form.component';
 
 export interface GoalWithMeta extends Goal {
   pct:     number;
   daysLeft: number | null;
+  emoji:   string;
 }
 
 @Component({
@@ -20,10 +22,11 @@ export class GoalsPage implements OnInit {
   goals: GoalWithMeta[] = [];
 
   constructor(
-    private storage:   StorageService,
-    private analytics: AnalyticsService,
-    private modal:     ModalController,
-    private alert:     AlertController,
+    private storage:     StorageService,
+    private analytics:   AnalyticsService,
+    private categorySvc: CategoryService,
+    private modal:       ModalController,
+    private alert:       AlertController,
   ) {}
 
   ngOnInit(): void {
@@ -39,7 +42,8 @@ export class GoalsPage implements OnInit {
         const diff = new Date(g.deadline).getTime() - now.getTime();
         daysLeft   = Math.max(Math.ceil(diff / 86_400_000), 0);
       }
-      return { ...g, pct, daysLeft };
+      const emoji = this.categorySvc.getCategoryById(g.category)?.emoji ?? '🎯';
+      return { ...g, pct, daysLeft, emoji };
     });
   }
 

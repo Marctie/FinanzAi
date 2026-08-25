@@ -55,7 +55,7 @@
   <div class="settings-group animate-in">
     <p class="section-title">Categorie</p>
     <ion-list class="surface-card" lines="inset">
-      <ion-item button routerLink="/tabs/categories" lines="none">
+      <ion-item button detail="false" routerLink="/tabs/categories" lines="none">
         <ion-icon name="pricetags-outline" slot="start" color="primary"></ion-icon>
         <ion-label>
           <h3>Gestisci categorie</h3>
@@ -70,7 +70,7 @@
   <div class="settings-group animate-in">
     <p class="section-title">Backup e dati</p>
     <ion-list class="surface-card" lines="inset">
-      <ion-item button (click)="exportBackup()">
+      <ion-item button detail="false" (click)="exportBackup()">
         <ion-icon name="cloud-download-outline" slot="start" color="primary"></ion-icon>
         <ion-label>
           <h3>Esporta backup completo</h3>
@@ -78,7 +78,7 @@
         </ion-label>
         <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
       </ion-item>
-      <ion-item button [disabled]="isImporting" (click)="backupFileInput.click()">
+      <ion-item button detail="false" [disabled]="isImporting" (click)="backupFileInput.click()">
         <ion-icon name="cloud-upload-outline" slot="start" color="primary"></ion-icon>
         <ion-label>
           <h3>Ripristina da backup</h3>
@@ -87,7 +87,7 @@
         <ion-spinner *ngIf="isImporting" slot="end" name="crescent"></ion-spinner>
         <ion-icon *ngIf="!isImporting" name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
       </ion-item>
-      <ion-item button (click)="exportCsv()" lines="none">
+      <ion-item button detail="false" (click)="exportCsv()" lines="none">
         <ion-icon name="download-outline" slot="start" color="primary"></ion-icon>
         <ion-label>
           <h3>Esporta CSV</h3>

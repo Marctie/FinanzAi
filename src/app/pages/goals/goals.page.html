@@ -35,7 +35,7 @@
     <div class="goal-card surface-card" *ngFor="let g of goals" (click)="openForm(g)">
       <div class="goal-header">
         <div class="goal-icon" [style.background]="g.color + '22'">
-          <span>{{ g.category }}</span>
+          <span>{{ g.emoji }}</span>
         </div>
         <div class="goal-info">
           <p class="goal-name">{{ g.name }}</p>
