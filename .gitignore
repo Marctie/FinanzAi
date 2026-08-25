@@ -71,3 +71,9 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Release signing — MAI da committare
+/keystore/
+android/keystore.properties
+*.jks
+*.keystore
