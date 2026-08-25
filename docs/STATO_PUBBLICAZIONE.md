@@ -47,6 +47,13 @@
 - ✅ **Asset store**: icona 512×512, feature graphic 1024×500, e screenshot reali (catturati con Playwright dall'app in esecuzione, non mockup) in tema chiaro e scuro, tutti in `store-assets/`.
 - ✅ **Guida pubblicazione Play Console**: creata in `docs/GUIDA_PUBBLICAZIONE_PLAY_STORE.md` con testi pronti per la scheda store, risposte al Data Safety form e al content rating, e procedura passo-passo per test chiuso → produzione.
 
+### Aggiunto in sessione 4 (2026-08-25) — rifiniture su richiesta esplicita
+- ✅ **Splash screen reale**: `capacitor.config.ts` referenziava il plugin `@capacitor/splash-screen` ma non era mai stato installato (config "morta"). Installato, sincronizzato e collegato in `app.component.ts`: la splash nativa (già presente, con il nuovo logo) resta visibile finché `StorageService.init()` non è completo, poi si chiude con una dissolvenza di 250ms invece di un taglio netto.
+- ✅ **Guida in-app**: nuova pagina `/tabs/guide` (FAQ ad accordion, 6 sezioni: movimenti, categorie, budget, obiettivi, analisi, dati/backup), raggiungibile da Impostazioni → "Guida all'uso".
+- ✅ **Gestione dati dimostrativi**: banner in Home visibile quando sono ancora attivi i dati precaricati (`MOCK_TRANSACTIONS` ecc.), con due azioni: "Continua a esplorare" (nasconde il banner, mantiene i dati) o "Rimuovi dati di esempio" (cancella transazioni/budget/obiettivi demo, fa prima uno snapshot di sicurezza). Il banner appare naturalmente appena l'utente arriva in Home dopo l'onboarding.
+- ✅ **Backup automatico silenzioso**: `BackupService.autoBackup()` viene eseguito ad ogni avvio dell'app (senza alcuna interazione utente, salvato in `localStorage['finanzai_auto_backup']` con checksum) e anche subito prima di operazioni distruttive ("Cancella tutti i dati", "Rimuovi dati di esempio"). In Impostazioni è visibile la data/ora dell'ultimo backup automatico e un'azione per ripristinarlo. La cancellazione totale dati (`clearData()`) ora preserva deliberatamente questo snapshot come ultima rete di sicurezza, anche dopo un reset completo.
+- ✅ Build firmata rigenerata e riverificata con openssl dopo tutte queste modifiche (stessa impronta del keystore).
+
 ### ⚠️ Cose che restano da fare (richiedono te, non automatizzabili)
 1. **Backup del keystore**: `keystore/finanzai-release.jks` e la password in `keystore/.keystore-credentials.txt` non sono su git (giustamente). **Devi copiarli tu in un posto sicuro (password manager + backup offline) prima di continuare** — se li perdi non potrai più pubblicare aggiornamenti della stessa app.
 2. ~~Email di contatto~~ — risolto: l'utente ha scelto `marco.p.develop@gmail.com` come unico dato di contatto da esporre pubblicamente (privacy policy + scheda store).
