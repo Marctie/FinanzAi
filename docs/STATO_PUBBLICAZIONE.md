@@ -2,6 +2,14 @@
 
 > Ultimo aggiornamento: 2026-08-25. Questo file va tenuto aggiornato ad ogni sessione di lavoro, così se la conversazione si interrompe si può ripartire senza perdere contesto. Vedi anche [CHATLOG.md](./CHATLOG.md) per la cronologia dettagliata.
 
+## Backlog — prossime funzionalità richieste dall'utente (non ancora implementate)
+
+- **Import spese da file esterni** (Excel/XLSX, CSV, JSON): l'utente vuole poter importare uno storico di spese già esistente, non solo il backup nativo di FinanzAI.
+  - Dopo l'upload, l'app deve **analizzare righe e colonne del file** per riconoscere i movimenti.
+  - Per ogni movimento importato, riconoscere le **categorie "familiari"** (es. varianti come "Spesa"/"spesa") e mapparle automaticamente sulle categorie esistenti nell'app (case-insensitive / fuzzy match).
+  - Se una categoria del file **non esiste** ancora nell'app, proporre all'utente la **creazione della nuova categoria con un form già precompilato** (nome preso dal file, tipo entrata/uscita dedotto, icona/colore di default suggeriti) da confermare o modificare prima di salvare — non creare categorie automaticamente senza conferma.
+  - Richiesta il 2026-08-25, durante la sessione di pubblicazione su Play Console — da pianificare e implementare in una sessione futura dedicata (probabilmente dopo la prima pubblicazione, per non introdurre modifiche al codice mentre è in corso il test chiuso).
+
 ## Decisioni prese con l'utente
 
 - **Nome sviluppatore in-app**: rimosso ogni riferimento personale (era già commentato/inutilizzato, ora eliminato dal codice).
