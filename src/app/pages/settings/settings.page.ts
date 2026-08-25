@@ -103,9 +103,45 @@ export class SettingsPage implements OnInit {
     await alert.present();
   }
 
-  clearData(): void {
-    if (confirm('Vuoi davvero eliminare tutti i dati? Questa azione non è reversibile.')) {
+  get lastAutoBackupLabel(): string {
+    const iso = this.backup.lastAutoBackupAt;
+    if (!iso) return 'Nessuno ancora';
+    return new Date(iso).toLocaleString('it-IT', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+  }
+
+  async restoreAutoBackup(): Promise<void> {
+    const alert = await this.alertCtrl.create({
+      header: 'Ripristina backup automatico',
+      message: `Verranno ripristinati i dati salvati automaticamente il ${this.lastAutoBackupLabel}, sovrascrivendo quelli attuali. Continuare?`,
+      buttons: [
+        { text: 'Annulla', role: 'cancel' },
+        {
+          text: 'Ripristina',
+          role: 'destructive',
+          handler: async () => {
+            try {
+              const result = await this.backup.restoreFromAutoBackup();
+              this.showToast(
+                `Ripristinati ${result.transactions} movimenti, ${result.budgets} budget, ${result.goals} obiettivi.`,
+                'success',
+              );
+            } catch (e) {
+              this.showToast((e as Error).message ?? 'Errore durante il ripristino.', 'danger');
+            }
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  async clearData(): Promise<void> {
+    if (confirm('Vuoi davvero eliminare tutti i dati? Questa azione non è reversibile. (Verrà comunque conservato un backup automatico di sicurezza, ripristinabile in seguito.)')) {
+      await this.backup.autoBackup();
+      const AUTO_BACKUP_KEY = 'finanzai_auto_backup';
+      const keep = localStorage.getItem(AUTO_BACKUP_KEY);
       localStorage.clear();
+      if (keep) localStorage.setItem(AUTO_BACKUP_KEY, keep);
       window.location.reload();
     }
   }

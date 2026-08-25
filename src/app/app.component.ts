@@ -2,10 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ThemeService } from './services/theme.service';
 import { StorageService } from './services/storage.service';
+import { BackupService } from './services/backup.service';
 import { OnboardingComponent } from './components/onboarding/onboarding.component';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { App } from '@capacitor/app';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 @Component({
   selector: 'app-root',
@@ -17,13 +19,18 @@ export class AppComponent implements OnInit {
   constructor(
     private theme:   ThemeService,
     private storage: StorageService,
+    private backup:  BackupService,
     private modal:   ModalController,
   ) {}
 
   async ngOnInit(): Promise<void> {
     this.theme.init();
     await this.storage.init();
+    this.backup.autoBackup();
     this.initNativePlugins();
+    if (Capacitor.isNativePlatform()) {
+      SplashScreen.hide({ fadeOutDuration: 250 });
+    }
     if (OnboardingComponent.shouldShow()) {
       await this.showOnboarding();
     }

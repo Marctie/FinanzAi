@@ -5,6 +5,9 @@ import { AnalyticsService, MonthlyStats } from '../../services/analytics.service
 import { AiService, AiInsight } from '../../services/ai.service';
 import { Transaction } from '../../models/transaction.model';
 import { CategoryService } from '../../services/category.service';
+import { BackupService } from '../../services/backup.service';
+
+const DEMO_BANNER_DISMISSED_KEY = 'finanzai_demo_banner_dismissed';
 
 Chart.register(...registerables);
 
@@ -35,6 +38,7 @@ export class DashboardPage implements OnInit, OnDestroy {
   currentMonthLabel = '';
   isLoading = true;
   chartsReady = false;
+  isDemoActive = false;
 
   private barChart?:   Chart;
   private donutChart?: Chart;
@@ -44,6 +48,7 @@ export class DashboardPage implements OnInit, OnDestroy {
     private analytics: AnalyticsService,
     private ai:        AiService,
     private categorySvc: CategoryService,
+    private backup:    BackupService,
   ) {}
 
   ngOnInit(): void {
@@ -54,6 +59,18 @@ export class DashboardPage implements OnInit, OnDestroy {
       this.refresh();
       this.isLoading = false;
     });
+    const dismissed = localStorage.getItem(DEMO_BANNER_DISMISSED_KEY) === '1';
+    this.storage.demoActive.subscribe(active => this.isDemoActive = active && !dismissed);
+  }
+
+  dismissDemoBanner(): void {
+    localStorage.setItem(DEMO_BANNER_DISMISSED_KEY, '1');
+    this.isDemoActive = false;
+  }
+
+  async clearDemoData(): Promise<void> {
+    await this.backup.autoBackup();
+    this.storage.clearDemoData();
   }
 
   // Called each time the page becomes active (Ionic lifecycle)

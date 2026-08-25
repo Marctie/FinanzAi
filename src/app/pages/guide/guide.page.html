@@ -1,0 +1,29 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/settings"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Guida</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <p class="guide-intro">Le risposte alle domande più comuni per usare FinanzAI al meglio.</p>
+
+  <div class="settings-group animate-in" *ngFor="let s of sections">
+    <p class="section-title">
+      <ion-icon [name]="s.icon"></ion-icon>
+      {{ s.title }}
+    </p>
+    <ion-accordion-group class="surface-card">
+      <ion-accordion *ngFor="let item of s.items" [value]="item.q">
+        <ion-item slot="header" lines="none">
+          <ion-label class="guide-question">{{ item.q }}</ion-label>
+        </ion-item>
+        <div class="guide-answer" slot="content">{{ item.a }}</div>
+      </ion-accordion>
+    </ion-accordion-group>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

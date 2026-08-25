@@ -66,10 +66,38 @@
     </ion-list>
   </div>
 
+  <!-- Guida -->
+  <div class="settings-group animate-in">
+    <p class="section-title">Aiuto</p>
+    <ion-list class="surface-card" lines="inset">
+      <ion-item button detail="false" routerLink="/tabs/guide" lines="none">
+        <ion-icon name="help-circle-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>
+          <h3>Guida all'uso</h3>
+          <p>Come usare al meglio le funzioni dell'app</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+      </ion-item>
+    </ion-list>
+  </div>
+
   <!-- Dati -->
   <div class="settings-group animate-in">
     <p class="section-title">Backup e dati</p>
     <ion-list class="surface-card" lines="inset">
+      <ion-item lines="inset">
+        <ion-icon name="shield-checkmark-outline" slot="start" color="medium"></ion-icon>
+        <ion-label>Backup automatico</ion-label>
+        <ion-note slot="end">{{ lastAutoBackupLabel }}</ion-note>
+      </ion-item>
+      <ion-item button detail="false" (click)="restoreAutoBackup()">
+        <ion-icon name="time-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>
+          <h3>Ripristina backup automatico</h3>
+          <p>Rete di sicurezza salvata in automatico ad ogni avvio</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+      </ion-item>
       <ion-item button detail="false" (click)="exportBackup()">
         <ion-icon name="cloud-download-outline" slot="start" color="primary"></ion-icon>
         <ion-label>

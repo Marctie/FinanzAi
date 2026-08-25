@@ -10,6 +10,18 @@
 </ion-header>
 
 <ion-content>
+  <!-- Banner dati dimostrativi -->
+  <div class="demo-banner animate-in" *ngIf="isDemoActive">
+    <div class="demo-banner-text">
+      <p class="demo-banner-title">📊 Stai vedendo dati dimostrativi</p>
+      <p class="demo-banner-subtitle">Usali per esplorare l'app, poi rimuovili per iniziare a tracciare le tue finanze reali.</p>
+    </div>
+    <div class="demo-banner-actions">
+      <ion-button size="small" fill="clear" (click)="dismissDemoBanner()">Continua a esplorare</ion-button>
+      <ion-button size="small" fill="solid" color="primary" (click)="clearDemoData()">Rimuovi dati di esempio</ion-button>
+    </div>
+  </div>
+
   <!-- Saldo Banner -->
   <div class="saldo-banner animate-in">
     <p class="saldo-label">Saldo mensile</p>

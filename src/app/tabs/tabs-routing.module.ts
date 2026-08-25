@@ -40,6 +40,10 @@ const routes: Routes = [
         loadChildren: () => import('../pages/categories/categories.module').then(m => m.CategoriesPageModule),
       },
       {
+        path: 'guide',
+        loadChildren: () => import('../pages/guide/guide.module').then(m => m.GuidePageModule),
+      },
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',

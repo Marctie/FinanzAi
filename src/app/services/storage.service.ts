@@ -12,6 +12,7 @@ const KEYS = {
   goals:        'finanzai_goals',
   preferences:  'finanzai_prefs',
   seeded:       'finanzai_seeded',
+  demoActive:   'finanzai_demo_active',
 };
 
 @Injectable({ providedIn: 'root' })
@@ -20,8 +21,11 @@ export class StorageService {
   private budgets$      = new BehaviorSubject<Budget[]>([]);
   private goals$        = new BehaviorSubject<Goal[]>([]);
   private prefs$        = new BehaviorSubject<UserPreferences>(DEFAULT_PREFERENCES);
+  private demoActive$   = new BehaviorSubject<boolean>(false);
 
   get transactions()  { return this.transactions$.asObservable(); }
+  get demoActive()    { return this.demoActive$.asObservable(); }
+  get isDemoActive(): boolean { return this.demoActive$.value; }
   get budgets()       { return this.budgets$.asObservable(); }
   get goals()         { return this.goals$.asObservable(); }
   get preferences()   { return this.prefs$.asObservable(); }
@@ -38,11 +42,25 @@ export class StorageService {
       this.save(KEYS.budgets,      MOCK_BUDGETS);
       this.save(KEYS.goals,        MOCK_GOALS);
       localStorage.setItem(KEYS.seeded, '1');
+      localStorage.setItem(KEYS.demoActive, '1');
     }
     this.transactions$.next(this.load<Transaction[]>(KEYS.transactions) ?? []);
     this.budgets$.next(this.load<Budget[]>(KEYS.budgets)               ?? []);
     this.goals$.next(this.load<Goal[]>(KEYS.goals)                     ?? []);
     this.prefs$.next(this.load<UserPreferences>(KEYS.preferences)      ?? DEFAULT_PREFERENCES);
+    this.demoActive$.next(localStorage.getItem(KEYS.demoActive) === '1');
+  }
+
+  /** Rimuove i dati dimostrativi precaricati e lascia l'app pronta per l'uso reale. */
+  clearDemoData(): void {
+    this.save(KEYS.transactions, []);
+    this.save(KEYS.budgets,      []);
+    this.save(KEYS.goals,        []);
+    this.transactions$.next([]);
+    this.budgets$.next([]);
+    this.goals$.next([]);
+    localStorage.removeItem(KEYS.demoActive);
+    this.demoActive$.next(false);
   }
 
   // ─── Transactions ──────────────────────────────────────────────────────────
