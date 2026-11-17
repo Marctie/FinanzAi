@@ -19,7 +19,7 @@ db.exec(`
   create table sync_link (entityType text, entityUid text, otherType text, otherUid text, isRemoved integer);
   create table reminding (uid text, title text);
   insert into category values ('c1','', 'Expense','products', 4293553944, 0, 0, 1),
-                              ('c2','Tabacchino','Expense','cigarettes', 4294095112, 5000, 0, 2),
+                              ('c2','Edicola','Expense','books', 4294095112, 5000, 0, 2),
                               ('c3','', 'Income','prepaid', 4281235663, 0, 0, 3),
                               ('c4','Vecchia','Expense','other', 0, 0, 1, 4);
   insert into account values ('a1',''), ('a2','Credito');
@@ -51,7 +51,7 @@ t('movimenti cancellati esclusi, importi da centesimi', () => {
   assert.equal(data.income, 1800);
 });
 t('categorie predefinite riconosciute dall\'icona, cancellate escluse', () => {
-  assert.deepEqual(data.categories.map(c => c.title).sort(), ['Spesa alimentare', 'Stipendio', 'Tabacchino']);
+  assert.deepEqual(data.categories.map(c => c.title).sort(), ['Spesa alimentare', 'Stipendio', 'Edicola']);
   assert.equal(argbToHex(4293553944), '#eb9918'.replace('eb9918', (4293553944 & 0xffffff).toString(16).padStart(6, '0')));
 });
 const targets = [{ id: 'spesa', name: 'Spesa', type: 'expense' as const }, { id: 'stipendio', name: 'Stipendio', type: 'income' as const },
@@ -67,14 +67,14 @@ t('conversione: id stabili, titoli, metodo di pagamento, ricorrenze, budget', ()
   const byId = Object.fromEntries(res.transactions.map(x => [x.id, x]));
   assert.equal(byId['mm-t1'].title, 'Esselunga');
   assert.equal(byId['mm-t1'].category, 'spesa');
-  assert.equal(byId['mm-t2'].title, 'Tabacchino');
+  assert.equal(byId['mm-t2'].title, 'Edicola');
   assert.equal(byId['mm-t2'].category, 'custom-mm-c2');
   assert.equal(byId['mm-t2'].paymentMethod, 'carta-credito');
   assert.equal(byId['mm-t3'].isRecurring, true);
   assert.equal(byId['mm-t3'].recurringId, 'mm-r1');
   assert.equal(byId['mm-t3'].title, 'Stipendio mensile');
   assert.equal(byId['mm-t5'].category, 'altro-uscita');          // collegamento alla categoria cancellato
-  assert.deepEqual(res.newCategories.map(c => c.name), ['Tabacchino']);
+  assert.deepEqual(res.newCategories.map(c => c.name), ['Edicola']);
   assert.deepEqual(res.budgets.map(b => [b.categoryId, b.amount]), [['custom-mm-c2', 50]]);
 });
 t('file non valido', () => {
