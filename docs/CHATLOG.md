@@ -176,3 +176,9 @@ Richiesta utente: continuare autonomamente fino al completamento di tutto quanto
 - Scansione dei 24 repository pubblici dell'account: righe di attribuzione trovate in FinanzAi, Dispence, DispenceAi-privacy, ScoutSafe, Script-My-Nails-Professional e informatix-repair (qui anche commit con autore "Claude").
 - FinanzAi: righe rimosse da tutta la cronologia (git-filter-repo) e force push. Gli altri repository restano in attesa di conferma (riscrittura + force push).
 - AAB e APK 1.1.0 copiati in `Play Store/FinanzAi/release-1.1.0/` (fuori dal repository).
+
+## 2026-11-17 — Preparazione Play Console (spunti dalla checklist di Dispensina)
+- Privacy policy: sezione "eliminazione account" con ancora (URL richiesto da Play) e richiesta via email.
+- Creato l'account per i revisori Google Play (credenziali solo in `keystore-privato/play-review-account.txt`) con codice di recupero e wallet di esempio; `tests/e2e/cleanup.mjs` ora cancella solo `e2e-*@example.org`.
+- `docs/AGGIORNAMENTO_PLAY_1.1.0.md` completata: ordine dei passi, Sicurezza dei dati (con ID utente), Accesso all'app, URL eliminazione account, note di rilascio IT/EN, avviso per gli APK installati a mano.
+- Cronologia dei 5 repository pubblici con righe di attribuzione riscritta (backup locali in `Archivio Progetti/Backup-cronologia-2026-11-17/`); i repository privati non sono stati toccati.

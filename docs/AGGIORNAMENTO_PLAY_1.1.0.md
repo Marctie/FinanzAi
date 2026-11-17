@@ -1,13 +1,24 @@
-# Aggiornamento Play Store — FinanzAI 1.1.0 (versionCode 2)
+# Play Console — aggiornamento FinanzAI 1.1.0 (versionCode 2)
 
-File da caricare (generati in locale, non nel repository; copia pronta in `Play Store/FinanzAi/release-1.1.0/`):
-- **AAB per la Play Console**: `android/app/build/outputs/bundle/release/app-release.aab`
-- APK firmato (per installazione diretta / prova): `android/app/build/outputs/apk/release/app-release.apk`
+La 1.1.0 introduce **account facoltativo, sincronizzazione, wallet condivisi, carte fedeltà, notifiche e
+diagnostica di utilizzo ed errori**. Le risposte date per la 1.0 ("nessun dato raccolto", "nessun accesso limitato")
+non sono più valide: vanno aggiornate **prima** di inviare la release, altrimenti Google può rifiutare l'aggiornamento.
+
+Ordine consigliato: 1) privacy policy online ✅ → 2) caricare l'AAB → 3) Sicurezza dei dati → 4) Accesso all'app →
+5) Eliminazione account → 6) Classificazione contenuti → 7) invio della release.
+
+File (fuori dal repository): `Play Store/FinanzAi/release-1.1.0/`
+- **`FinanzAI-1.1.0-vc2.aab`** → da caricare in Play Console
+- `FinanzAI-1.1.0-vc2.apk` → firmato, per installazione diretta / prova
 
 Firma: stesso keystore della 1.0 (`keystore-privato/finanzai-release.jks`).
 
-## Note di rilascio (da incollare)
+## 1. Privacy policy ✅
+Pubblicata allo stesso URL già registrato: `https://marctie.github.io/FinanzAI-Privacy/` (IT) e `en.html` (EN),
+aggiornata il 17/11/2026. Contiene la sezione con ancora per l'eliminazione dell'account.
 
+## 2. Nuova release
+Note di rilascio (it-IT):
 ```
 <it-IT>
 Novità della versione 1.1.0:
@@ -18,57 +29,80 @@ Novità della versione 1.1.0:
 • Recupero password con codice personale
 </it-IT>
 ```
+Note di rilascio (en-US), se la scheda ha anche l'inglese:
+```
+<en-US>
+What's new in 1.1.0:
+• Optional account: your data syncs between phone and web (offline too)
+• Shared wallets: split expenses with friends, roommates or partner and see who owes whom
+• Loyalty cards: keep them all on your phone, scan them and share them with your wallet
+• Notifications: reminders for recurring payments, budgets and goals, plus shared expense alerts
+• Password recovery with a personal code
+</en-US>
+```
 
-## Cosa cambia nella Play Console (obbligatorio prima di inviare)
+## 3. Contenuti dell'app → Sicurezza dei dati
 
-### 1. Norme sulla privacy
-URL invariato: `https://marctie.github.io/FinanzAI-Privacy/` — già aggiornato al 17/11/2026 (account, Supabase UE,
-wallet condivisi, notifiche, diagnostica con ID casuale, eliminazione account).
-
-### 2. Accesso all'app (App content → App access)
-Prima: "Nessuna parte dell'app è soggetta a limitazioni". Ora le funzioni condivise richiedono un account
-→ scegliere **"Tutte le funzionalità o alcune sono soggette a limitazioni"** e fornire un account di prova per la
-revisione (creare un account dedicato dall'app, non usare dati personali; conservare le credenziali in
-`keystore-privato/`).
-
-### 3. Sicurezza dei dati (App content → Data safety)
-
-Domande generali:
 | Domanda | Risposta |
 |---|---|
 | L'app raccoglie o condivide dati utente? | **Sì** |
-| Tutti i dati sono crittografati in transito? | **Sì** (HTTPS) |
-| Gli utenti possono chiedere l'eliminazione dei dati? | **Sì** — dall'app (Impostazioni → Account → Elimina account) e via email |
+| Tutti i dati sono crittografati in transito? | **Sì** |
+| Gli utenti possono chiedere l'eliminazione dei dati? | **Sì** (punto 5) |
 
-Tipi di dati **raccolti** (nessuno è "condiviso" con terze parti: Supabase è un fornitore che tratta i dati per conto
-dello sviluppatore, quindi non conta come condivisione):
+Tipi di dati: per tutti *Raccolti* **sì**, *Condivisi* **no** (Supabase e Telegram sono fornitori che trattano i dati
+per conto dello sviluppatore; la condivisione di spese e carte con i membri di un wallet è avviata dall'utente ed è
+esente), *Trattati in modo temporaneo* **no**.
 
-| Categoria → tipo | Raccolto | Obbligatorio? | Finalità |
+| Categoria Play | Tipo | Obbligatorio? | Finalità |
 |---|---|---|---|
-| Informazioni personali → **Indirizzo email** | Sì | Facoltativo (solo con account) | Funzionalità app, Gestione account |
-| Informazioni personali → **Nome** (nome visibile) | Sì | Facoltativo | Funzionalità app, Gestione account |
-| Informazioni finanziarie → **Altre informazioni finanziarie** (movimenti, budget, spese condivise, carte fedeltà) | Sì | Facoltativo (solo con account) | Funzionalità app |
-| Attività nelle app → **Interazioni con l'app** (azioni, senza contenuti) | Sì | Obbligatorio | **Analisi** |
-| Informazioni e prestazioni dell'app → **Log degli arresti anomali** / **Diagnostica** (errori) | Sì | Obbligatorio | **Analisi** |
-| ID dispositivo o altri ID → **ID casuale per installazione** | Sì | Obbligatorio | **Analisi** |
+| Informazioni personali | **Indirizzo email** | Facoltativo (solo con account) | Funzionalità dell'app, Gestione dell'account |
+| Informazioni personali | **Nome** (nome visibile nei wallet) | Facoltativo | Funzionalità dell'app, Gestione dell'account |
+| Informazioni personali | **ID utente** | Facoltativo | Funzionalità dell'app, Gestione dell'account |
+| Informazioni finanziarie | **Altre informazioni finanziarie** (movimenti, budget, obiettivi, spese condivise, carte fedeltà) | Facoltativo | Funzionalità dell'app |
+| Attività nelle app | **Interazioni con le app** (solo il tipo di azione, senza contenuti) | Obbligatorio | Analisi |
+| Informazioni e prestazioni delle app | **Log degli arresti anomali** | Obbligatorio | Analisi |
+| Informazioni e prestazioni delle app | **Diagnostica** | Obbligatorio | Analisi |
+| ID dispositivo o altri ID | **ID dispositivo o altri ID** (ID casuale dell'installazione, `telemetry_device`) | Obbligatorio | Analisi |
 
 Non raccolti: posizione, contatti, foto/video (la fotocamera legge solo il codice della carta, l'immagine non viene
-salvata né inviata), audio, file, calendario, messaggi, cronologia web, ID pubblicità.
+salvata né inviata), audio, file, calendario, messaggi, cronologia web, salute, ID pubblicità (le iscrizioni push
+riguardano solo la web app).
 
-I dati raccolti sono "elaborati in modo temporaneo"? **No** (vengono conservati: dati dell'account finché esiste,
-telemetria max 90 giorni).
+## 4. Contenuti dell'app → Accesso all'app
+Scegli **"L'accesso a tutte le funzionalità o ad alcune è limitato"** e aggiungi:
+- Nome: `Account di revisione`
+- Nome utente / password: da `keystore-privato/play-review-account.txt` (file locale, non versionato)
+- Istruzioni:
+  `L'app funziona anche senza account. Per le funzioni con account: Altro → Account → Accedi con le credenziali indicate (nessuna verifica email o codice richiesti). Scheda "Condivisi": wallet di esempio "Casa (esempio)" con spese, saldi e una carta fedeltà condivisa.`
 
-### 4. Funzionalità finanziarie
-Invariato: l'app non fornisce servizi finanziari (niente pagamenti, prestiti, conti): dividere le spese tra amici è
-un semplice calcolo, nessun denaro passa dall'app.
+L'account ha già il codice di recupero e un wallet di esempio. **Non eliminarlo** finché l'app è pubblicata:
+`tests/e2e/cleanup.mjs` cancella solo `e2e-*@example.org`.
 
-### 5. Permessi nuovi nell'AAB
-- `POST_NOTIFICATIONS` (notifiche, chiesto solo dopo il tocco dell'utente).
-- `SCHEDULE_EXACT_ALARM` aggiunto dal plugin delle notifiche viene **rimosso** dal manifest (`tools:node="remove"`):
-  le notifiche usano sempre `isExactNotification: false`, quindi non serve la dichiarazione "sveglie esatte".
-- Scanner delle carte: usa il modulo Google Code Scanner di Play Services, che **non** richiede il permesso fotocamera
-  all'app.
+## 5. Eliminazione dell'account
+Play richiede sia l'eliminazione dall'app sia un link web.
+- Nell'app: **Altro → Account → Elimina account** (cancella account, dati sincronizzati, preferenze, iscrizioni
+  push; esce da tutti i wallet, eliminando quelli senza altri membri).
+- **URL per la richiesta di eliminazione**: `https://marctie.github.io/FinanzAI-Privacy/#eliminazione-account`
+  (spiega come farlo dall'app o via email).
+- Dati eliminati: account, email, nome, dati personali sincronizzati, preferenze, iscrizioni push, appartenenza ai
+  wallet. Dati conservati: eventi tecnici di utilizzo ed errori fino a 90 giorni; le spese già registrate in un
+  wallet con altri membri restano visibili a loro.
 
-### 6. Classificazione dei contenuti
-Rivedere il questionario: ora esiste **condivisione di contenuti tra utenti** limitata ai membri di un wallet invitati
-con codice (spese e carte fedeltà, nessuna chat o contenuto pubblico).
+## 6. Classificazione dei contenuti
+Riaprire il questionario: ora gli utenti possono **condividere contenuti** (spese e carte fedeltà) ma solo con i
+membri di un wallet invitati con codice; nessuna chat, nessun contenuto pubblico.
+
+## 7. Funzionalità finanziarie
+Invariato: "La mia app non fornisce funzionalità finanziarie" (dividere le spese è un calcolo: nessun denaro passa
+dall'app, niente pagamenti, prestiti o conti).
+
+## Permessi nell'AAB
+- `POST_NOTIFICATIONS`: chiesto solo dopo il tocco dell'utente su "Attiva le notifiche".
+- `SCHEDULE_EXACT_ALARM` aggiunto dal plugin delle notifiche è **rimosso** dal manifest (`tools:node="remove"`): le
+  notifiche usano sempre `isExactNotification: false`, quindi non serve la dichiarazione "sveglie esatte".
+- Scanner delle carte: modulo Google Code Scanner di Play Services, **nessun** permesso fotocamera all'app.
+
+## Attenzione: APK installati a mano
+Chi ha installato l'APK a mano può aggiornare installando quello nuovo sopra (stessa chiave). Non può passare agli
+aggiornamenti del Play Store senza disinstallare, perché Google firma con una chiave diversa (Play App Signing):
+prima di disinstallare conviene accedere con un account, così i dati restano sincronizzati.
