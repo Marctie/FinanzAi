@@ -51,7 +51,7 @@ t('movimenti cancellati esclusi, importi da centesimi', () => {
   assert.equal(data.income, 1800);
 });
 t('categorie predefinite riconosciute dall\'icona, cancellate escluse', () => {
-  assert.deepEqual(data.categories.map(c => c.title).sort(), ['Spesa alimentare', 'Stipendio', 'Edicola']);
+  assert.deepEqual(data.categories.map(c => c.title).sort(), ['Edicola', 'Spesa alimentare', 'Stipendio']);
   assert.equal(argbToHex(4293553944), '#eb9918'.replace('eb9918', (4293553944 & 0xffffff).toString(16).padStart(6, '0')));
 });
 const targets = [{ id: 'spesa', name: 'Spesa', type: 'expense' as const }, { id: 'stipendio', name: 'Stipendio', type: 'income' as const },
