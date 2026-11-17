@@ -187,3 +187,8 @@ Richiesta utente: continuare autonomamente fino al completamento di tutto quanto
 - Release 2 (1.1.0) caricata nel canale Test chiuso - Alpha con note di rilascio IT.
 - Contenuti dell'app aggiornati: Sicurezza dei dati (8 tipi di dati, crittografia, URL eliminazione account, eliminazione dati senza eliminare l'account), Accesso all'app (account dei revisori), nuovo questionario di Classificazione dei contenuti.
 - Inviate 3 modifiche per la revisione. Pubblicazione gestita attiva: dopo l'approvazione va premuto "Pubblica" in Panoramica delle pubblicazioni.
+
+## 2026-11-17 — Chiusura sessione
+- Domanda: forzare l'aggiornamento dei tester dalla Console non è possibile (servirebbero le In-app updates API: proposta non necessaria per ora).
+- Riepilogo dettagliato della sessione salvato in locale (cartella privata esclusa da git) e memoria del progetto aggiornata.
+- Da fare: revocare i token incollati in chat, premere "Pubblica" dopo l'approvazione di Google, avviare il bot dal Bot Control Center.
