@@ -3,7 +3,7 @@
 App di finanza personale (Angular 20 + Ionic 8 + Capacitor 8) per **Android** (Play Store, `com.finanzai.app`) e come
 **web app installabile su iPhone** (PWA su GitHub Pages: https://marctie.github.io/FinanzAi/).
 
-**Versione attuale: 1.1.1** (Android versionCode 3) · storico in [docs/CHATLOG.md](docs/CHATLOG.md)
+**Versione attuale: 1.1.2** (Android versionCode 4) · storico in [docs/CHATLOG.md](docs/CHATLOG.md)
 
 ## Funzioni
 

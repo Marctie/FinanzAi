@@ -198,3 +198,8 @@ Richiesta utente: continuare autonomamente fino al completamento di tutto quanto
 - Verifica su un backup reale fornito dall'utente, solo in locale (file e copie temporanee mai nel repository né su server, poi cancellate): numero di movimenti e totali identici all'origine, categorie, budget e ricorrenze corretti. Test di unità con database finto (5) e test E2E in Edge headless (import + reimportazione senza doppioni).
 - Bot pieno di errori: 12 erano dei test locali (build su localhost collegata al Supabase vero) → eliminati e d'ora in poi le build locali non inviano telemetria. 1 vero dall'iPhone: `ChunkLoadError` dopo un nuovo deploy → ora la pagina si ricarica da sola una volta. 1 innocuo da Android (plugin Keyboard "UNIMPLEMENTED") → escluso.
 - Versione 1.1.1 (Android versionCode 3).
+
+## 2026-11-17 — Versione 1.1.2: pulsante + della barra in basso
+- Sulla web app (GitHub Pages, base `/FinanzAi/`) il pulsante **+** portava a `marctie.github.io/tabs/add-transaction` (404): aveva solo un `href` assoluto e niente attributo `tab`. Ora tutti i pulsanti della barra usano `tab=…` (navigazione del router, che rispetta la base); tolti gli `href` assoluti. Su Android funzionava già (base `/`).
+- Nuovo test `tests/e2e/tabs.e2e.mjs`: ogni pulsante della barra resta dentro `/FinanzAi/`.
+- Versione 1.1.2 (Android versionCode 4).
