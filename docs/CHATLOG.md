@@ -182,3 +182,8 @@ Richiesta utente: continuare autonomamente fino al completamento di tutto quanto
 - Creato l'account per i revisori Google Play (credenziali solo in `keystore-privato/play-review-account.txt`) con codice di recupero e wallet di esempio; `tests/e2e/cleanup.mjs` ora cancella solo `e2e-*@example.org`.
 - `docs/AGGIORNAMENTO_PLAY_1.1.0.md` completata: ordine dei passi, Sicurezza dei dati (con ID utente), Accesso all'app, URL eliminazione account, note di rilascio IT/EN, avviso per gli APK installati a mano.
 - Cronologia dei 5 repository pubblici con righe di attribuzione riscritta (backup locali in `Archivio Progetti/Backup-cronologia-2026-11-17/`); i repository privati non sono stati toccati.
+
+## 2026-11-17 — Invio a Google Play della 1.1.0
+- Release 2 (1.1.0) caricata nel canale Test chiuso - Alpha con note di rilascio IT.
+- Contenuti dell'app aggiornati: Sicurezza dei dati (8 tipi di dati, crittografia, URL eliminazione account, eliminazione dati senza eliminare l'account), Accesso all'app (account dei revisori), nuovo questionario di Classificazione dei contenuti.
+- Inviate 3 modifiche per la revisione. Pubblicazione gestita attiva: dopo l'approvazione va premuto "Pubblica" in Panoramica delle pubblicazioni.
