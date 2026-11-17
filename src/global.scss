@@ -226,3 +226,13 @@ ion-input, ion-textarea, ion-searchbar {
   animation: shimmer 1.5s infinite;
   border-radius: 8px;
 }
+
+// ─── Safe area (iPhone con notch / Dynamic Island, PWA in modalità standalone) ──
+// Ionic usa queste variabili per header, tab bar e modali; le rendiamo esplicite.
+:root {
+  --ion-safe-area-top: env(safe-area-inset-top);
+  --ion-safe-area-bottom: env(safe-area-inset-bottom);
+  --ion-safe-area-left: env(safe-area-inset-left);
+  --ion-safe-area-right: env(safe-area-inset-right);
+}
+

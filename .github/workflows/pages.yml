@@ -24,7 +24,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Installa dipendenze
@@ -41,7 +41,7 @@ jobs:
           fi
 
       - name: Build
-        run: npm run build -- --base-href "${{ steps.basehref.outputs.value }}"
+        run: npx ng build --base-href "${{ steps.basehref.outputs.value }}"
 
       - name: SPA fallback (404 -> index)
         run: cp www/index.html www/404.html

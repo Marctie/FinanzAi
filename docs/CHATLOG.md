@@ -120,3 +120,14 @@ Richiesta utente: continuare autonomamente fino al completamento di tutto quanto
 - `.gitignore`: esclusi `keystore-privato/`, `.env*`, `*secrets*`; il README è ora tracciato.
 - Aggiunto `README.md` come documentazione principale.
 - Supabase: il token fornito ha permessi limitati (può leggere i progetti, non crearne). Creazione del progetto dedicato in sospeso.
+
+## 2026-11-17 — Supabase collegato
+- Generato un token di gestione con accesso completo all'organizzazione. Il piano gratuito ammette 2 progetti attivi: usato il progetto vuoto "FinanzAi" (UE, Irlanda) già creato dalla dashboard. Chiavi salvate solo in `keystore-privato/secrets.env`.
+
+## 2026-11-17 — Fase 1: PWA per iPhone e GitHub Pages
+- Manifest riscritto (standalone, percorsi relativi, icone PNG normali e maskable); rimosse le vecchie icone `.webp` dichiarate come PNG.
+- Nuove icone dal logo dello store: versione a tutto campo con gradiente per apple-touch-icon e maskable (gli angoli trasparenti su iOS diventerebbero neri), favicon `.ico` multi-dimensione + PNG 16/32/64.
+- Service worker `src/sw.js` registrato solo sul web (`!Capacitor.isNativePlatform()`), con funzionamento offline.
+- Safe area: variabili Ionic collegate a `env(safe-area-inset-*)`, onboarding (unica schermata senza header) con padding dedicato.
+- Workflow rinominato in `.github/workflows/pages.yml`, Node 22. Script `build:web` e `build:android` separati. Il vecchio branch `gh-pages` non è più usato (Pages pubblica tramite Actions).
+- Test: build web con base `/FinanzAi/` verificata in Edge headless via CDP (service worker attivo sullo scope corretto, manifest e icona iOS raggiungibili, app funzionante anche offline). Build Android con base `/`, APK installato e avviato sull'emulatore: l'app si apre normalmente e il service worker non viene registrato.
