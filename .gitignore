@@ -2,6 +2,7 @@
 # http://git-scm.com/docs/gitignore
 
 *.md
+!README.md
 !docs/*.md
 
 *~
@@ -74,6 +75,11 @@ Thumbs.db
 
 # Release signing — MAI da committare
 /keystore/
+keystore-privato/
+.env
+.env.*
+*secrets*
+android/key.properties
 android/keystore.properties
 *.jks
 *.keystore

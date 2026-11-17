@@ -108,3 +108,15 @@ Richiesta utente: continuare autonomamente fino al completamento di tutto quanto
 **Memoria aggiornata**: il file di memoria `play_console_listing_qa.md` (fuori dal repository, in `~/.claude/projects/.../memory/`) è stato aggiornato progressivamente con tutte queste domande/risposte, pensato per essere riutilizzato in futuri progetti con lo stesso profilo (nessun account, dati locali, no pubblicità).
 
 **Stato a fine sessione**: l'utente ha completato la configurazione (a suo dire) e sta ora aspettando/agendo lato Play Console. Nessuna modifica al codice in questa parte della sessione — solo assistenza sulla configurazione della Play Console. Nessun commit necessario oltre a quelli già fatti.
+
+---
+
+## 2026-11-17 — Fase 0: pulizia repository e segreti
+
+- Verificato che la cartella collegata a `github.com/Marctie/FinanzAi` è `Play Store/FinanzAi/FinanzAi` (la copia in `Play Store/Finance` è più vecchia, senza Android, e non viene più usata).
+- Creato un backup `.bundle` completo **solo in locale**, fuori dal repository.
+- Cronologia riscritta con git-filter-repo: autori e committer unificati su un'identità neutra, rimossi email personali/aziendali e il vecchio package name dai contenuti e dai messaggi. Force push su GitHub.
+- Creata `keystore-privato/` (ignorata da git): spostati keystore di firma e credenziali, aggiunti token Supabase e Telegram. `android/keystore.properties` ora punta lì.
+- `.gitignore`: esclusi `keystore-privato/`, `.env*`, `*secrets*`; il README è ora tracciato.
+- Aggiunto `README.md` come documentazione principale.
+- Supabase: il token fornito ha permessi limitati (può leggere i progetti, non crearne). Creazione del progetto dedicato in sospeso.
