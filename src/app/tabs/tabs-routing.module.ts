@@ -32,6 +32,10 @@ const routes: Routes = [
         loadChildren: () => import('../pages/goals/goals.module').then(m => m.GoalsPageModule),
       },
       {
+        path: 'shared',
+        loadChildren: () => import('../pages/shared/shared.module').then(m => m.SharedPageModule),
+      },
+      {
         path: 'settings',
         loadChildren: () => import('../pages/settings/settings.module').then(m => m.SettingsPageModule),
       },

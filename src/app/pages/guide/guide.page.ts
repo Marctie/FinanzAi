@@ -74,7 +74,19 @@ export class GuidePage {
       items: [
         {
           q: 'Dove sono salvati i miei dati?',
-          a: 'Esclusivamente sul tuo dispositivo. Nessun account, nessun server esterno, nessuna pubblicità.',
+          a: 'Senza account restano solo sul tuo dispositivo. Se crei un account (facoltativo, da Altro → Account) vengono sincronizzati in modo sicuro su server in UE, così li ritrovi su telefono e web. Nessuna pubblicità.',
+        },
+        {
+          q: 'Come funzionano i wallet condivisi?',
+          a: 'Da Condivisi → Wallet crei un wallet e lo condividi con un codice invito. Ogni spesa indica chi ha pagato e come si divide (parti uguali, percentuale o importi): FinanzAI calcola chi deve a chi. Quando qualcuno restituisce i soldi tocca "Saldato".',
+        },
+        {
+          q: 'E le carte fedeltà?',
+          a: 'Da Condivisi → Carte fedeltà aggiungi le carte (anche scansionandole) e le mostri alla cassa dal telefono. Puoi tenerle per te o condividerle con i membri di un wallet.',
+        },
+        {
+          q: 'Ho dimenticato la password',
+          a: 'Usa "Password dimenticata?" nella schermata di accesso con la tua email e il codice di recupero che hai salvato alla registrazione. Puoi generarne uno nuovo da Altro → Account.',
         },
         {
           q: 'Come faccio un backup?',

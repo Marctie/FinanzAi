@@ -4,7 +4,17 @@ import { Transaction } from '../models/transaction.model';
 import { Budget } from '../models/budget.model';
 import { Goal } from '../models/goal.model';
 import { UserPreferences, DEFAULT_PREFERENCES } from '../models/user-preferences.model';
+import { LoyaltyCard } from '../models/loyalty-card.model';
 import { MOCK_TRANSACTIONS, MOCK_BUDGETS, MOCK_GOALS } from '../core/mock-data';
+import { localChanges$ } from '../core/local-changes';
+
+/** Dati personali sincronizzati con l'account (tabella personal_data). */
+export interface PersonalSnapshot {
+  transactions: Transaction[];
+  budgets: Budget[];
+  goals: Goal[];
+  loyaltyCards: LoyaltyCard[];
+}
 
 const KEYS = {
   transactions: 'finanzai_transactions',
@@ -13,7 +23,12 @@ const KEYS = {
   preferences:  'finanzai_prefs',
   seeded:       'finanzai_seeded',
   demoActive:   'finanzai_demo_active',
+  loyaltyCards: 'finanzai_loyalty_cards',
 };
+
+/** Chiavi che fanno parte dei dati personali sincronizzati. */
+export const PERSONAL_KEYS = new Set([KEYS.transactions, KEYS.budgets, KEYS.goals, KEYS.loyaltyCards]);
+export const PREFS_KEY = KEYS.preferences;
 
 @Injectable({ providedIn: 'root' })
 export class StorageService {
@@ -22,6 +37,7 @@ export class StorageService {
   private goals$        = new BehaviorSubject<Goal[]>([]);
   private prefs$        = new BehaviorSubject<UserPreferences>(DEFAULT_PREFERENCES);
   private demoActive$   = new BehaviorSubject<boolean>(false);
+  private loyaltyCards$ = new BehaviorSubject<LoyaltyCard[]>([]);
 
   get transactions()  { return this.transactions$.asObservable(); }
   get demoActive()    { return this.demoActive$.asObservable(); }
@@ -29,6 +45,8 @@ export class StorageService {
   get budgets()       { return this.budgets$.asObservable(); }
   get goals()         { return this.goals$.asObservable(); }
   get preferences()   { return this.prefs$.asObservable(); }
+  get loyaltyCards()  { return this.loyaltyCards$.asObservable(); }
+  get loyaltyCardsSnapshot(): LoyaltyCard[] { return this.loyaltyCards$.value; }
 
   get transactionsSnapshot(): Transaction[] { return this.transactions$.value; }
   get budgetsSnapshot(): Budget[]           { return this.budgets$.value; }
@@ -47,7 +65,9 @@ export class StorageService {
     this.transactions$.next(this.load<Transaction[]>(KEYS.transactions) ?? []);
     this.budgets$.next(this.load<Budget[]>(KEYS.budgets)               ?? []);
     this.goals$.next(this.load<Goal[]>(KEYS.goals)                     ?? []);
-    this.prefs$.next(this.load<UserPreferences>(KEYS.preferences)      ?? DEFAULT_PREFERENCES);
+    // Le preferenze salvate da versioni precedenti non hanno i campi nuovi: si completano con i default.
+    this.prefs$.next({ ...DEFAULT_PREFERENCES, ...(this.load<Partial<UserPreferences>>(KEYS.preferences) ?? {}) });
+    this.loyaltyCards$.next(this.load<LoyaltyCard[]>(KEYS.loyaltyCards) ?? []);
     this.demoActive$.next(localStorage.getItem(KEYS.demoActive) === '1');
   }
 
@@ -120,6 +140,50 @@ export class StorageService {
     this.prefs$.next(prefs);
   }
 
+  // ─── Carte fedeltà personali (quelle condivise stanno nei wallet) ───────────
+  saveLoyaltyCard(card: LoyaltyCard): void {
+    const exists = this.loyaltyCards$.value.some(c => c.id === card.id);
+    const list = exists
+      ? this.loyaltyCards$.value.map(c => c.id === card.id ? card : c)
+      : [...this.loyaltyCards$.value, card];
+    this.save(KEYS.loyaltyCards, list);
+    this.loyaltyCards$.next(list);
+  }
+
+  deleteLoyaltyCard(id: string): void {
+    const list = this.loyaltyCards$.value.filter(c => c.id !== id);
+    this.save(KEYS.loyaltyCards, list);
+    this.loyaltyCards$.next(list);
+  }
+
+  // ─── Sincronizzazione account ──────────────────────────────────────────────
+  collectPersonal(): PersonalSnapshot {
+    return {
+      transactions: this.transactions$.value,
+      budgets:      this.budgets$.value,
+      goals:        this.goals$.value,
+      loyaltyCards: this.loyaltyCards$.value,
+    };
+  }
+
+  /** Applica i dati arrivati dal server senza segnalarli come modifiche locali. */
+  applyPersonal(d: PersonalSnapshot): void {
+    this.save(KEYS.transactions, d.transactions, false);
+    this.save(KEYS.budgets,      d.budgets, false);
+    this.save(KEYS.goals,        d.goals, false);
+    this.save(KEYS.loyaltyCards, d.loyaltyCards, false);
+    this.transactions$.next(d.transactions);
+    this.budgets$.next(d.budgets);
+    this.goals$.next(d.goals);
+    this.loyaltyCards$.next(d.loyaltyCards);
+  }
+
+  applyPreferences(prefs: Partial<UserPreferences>): void {
+    const merged = { ...DEFAULT_PREFERENCES, ...this.prefs$.value, ...prefs };
+    this.save(KEYS.preferences, merged, false);
+    this.prefs$.next(merged);
+  }
+
   // ─── Bulk restore (backup) ─────────────────────────────────────────────────
   restoreAll(data: {
     transactions: Transaction[];
@@ -138,8 +202,9 @@ export class StorageService {
   }
 
   // ─── Internal ──────────────────────────────────────────────────────────────
-  private save(key: string, value: unknown): void {
+  private save(key: string, value: unknown, notify = true): void {
     localStorage.setItem(key, JSON.stringify(value));
+    if (notify) localChanges$.next(key);
   }
 
   private load<T>(key: string): T | null {

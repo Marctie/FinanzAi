@@ -1,0 +1,67 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()" fill="clear" aria-label="Chiudi"><ion-icon name="close-outline" slot="icon-only"></ion-icon></ion-button>
+    </ion-buttons>
+    <ion-title>{{ card ? 'Modifica carta' : 'Nuova carta fedeltà' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="save()" fill="solid" shape="round" color="primary" data-testid="card-save">Salva</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="scan-box" *ngIf="scanning">
+    <video #video playsinline muted class="scan-video"></video>
+    <p>Inquadra il codice a barre della carta</p>
+    <ion-button fill="outline" shape="round" (click)="cancelScan()">Annulla</ion-button>
+  </div>
+
+  <ion-button *ngIf="canScan && !scanning" expand="block" fill="outline" shape="round" (click)="scan()" class="scan-btn">
+    <ion-icon name="scan-outline" slot="start"></ion-icon>Scansiona la carta
+  </ion-button>
+
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="storefront-outline" slot="start" color="medium"></ion-icon>
+    <ion-input [(ngModel)]="store" placeholder="Negozio (es. Esselunga)" maxlength="40" data-testid="card-store"></ion-input>
+  </ion-item>
+
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="barcode-outline" slot="start" color="medium"></ion-icon>
+    <ion-input [(ngModel)]="number" placeholder="Numero della carta" maxlength="80" autocomplete="off" data-testid="card-number"></ion-input>
+  </ion-item>
+
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="options-outline" slot="start" color="medium"></ion-icon>
+    <ion-select [(ngModel)]="format" label="Formato" interface="action-sheet">
+      <ion-select-option *ngFor="let f of formats" [value]="f.id">{{ f.label }}</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <app-barcode *ngIf="number.trim()" [value]="number.trim()" [format]="format"></app-barcode>
+
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="person-outline" slot="start" color="medium"></ion-icon>
+    <ion-input [(ngModel)]="holder" placeholder="Intestatario (facoltativo)" maxlength="40"></ion-input>
+  </ion-item>
+
+  <ion-item class="form-item" lines="none" *ngIf="!lockDestination">
+    <ion-icon name="people-outline" slot="start" color="medium"></ion-icon>
+    <ion-select [(ngModel)]="destination" label="Visibile a" interface="action-sheet" data-testid="card-destination">
+      <ion-select-option value="personal">Solo a me</ion-select-option>
+      <ion-select-option *ngFor="let w of wallets" [value]="w.id">{{ w.emoji }} Membri di {{ w.name }}</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <p class="group-label">Colore</p>
+  <div class="color-row">
+    <button *ngFor="let c of colors" type="button" class="color-dot" [style.background]="c" [class.active]="c === color"
+      (click)="color = c" [attr.aria-label]="'Colore ' + c"></button>
+  </div>
+
+  <p class="form-error" *ngIf="error" role="alert">{{ error }}</p>
+
+  <ion-button *ngIf="card" expand="block" fill="outline" color="danger" (click)="remove()" class="danger-btn">
+    <ion-icon name="trash-outline" slot="start"></ion-icon>Elimina carta
+  </ion-button>
+</ion-content>

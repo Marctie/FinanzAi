@@ -2,8 +2,11 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Category, CategoryType } from '../models/category.model';
 import { DEFAULT_CATEGORIES } from '../core/categories.constants';
+import { localChanges$ } from '../core/local-changes';
 
-const CUSTOM_KEY = 'finanzai_custom_categories';
+export const CATEGORIES_KEY = 'finanzai_custom_categories';
+
+const CUSTOM_KEY = CATEGORIES_KEY;
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
@@ -66,7 +69,14 @@ export class CategoryService {
     return raw ? JSON.parse(raw) as Category[] : [];
   }
 
-  private persistCustom(custom: Category[]): void {
+  /** Applica le categorie arrivate dal server senza segnalarle come modifica locale. */
+  applyRemote(custom: Category[]): void {
+    this.persistCustom(custom, false);
+    this.categories$.next([...DEFAULT_CATEGORIES, ...custom]);
+  }
+
+  private persistCustom(custom: Category[], notify = true): void {
     localStorage.setItem(CUSTOM_KEY, JSON.stringify(custom));
+    if (notify) localChanges$.next(CUSTOM_KEY);
   }
 }

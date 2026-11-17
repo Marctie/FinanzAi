@@ -14,6 +14,10 @@ const config: CapacitorConfig = {
       resize:              'body',
       resizeOnFullScreen:  true,
     },
+    LocalNotifications: {
+      smallIcon: 'ic_stat_notify',
+      iconColor: '#1b6ca8',
+    },
     SplashScreen: {
       launchAutoHide: false,
       backgroundColor: '#1b6ca8',
@@ -24,7 +28,7 @@ const config: CapacitorConfig = {
   android: {
     allowMixedContent: false,
     captureInput: true,
-    webContentsDebuggingEnabled: false,
+    // Non impostato: la WebView è ispezionabile solo nelle build di debug (test E2E con DevTools), mai in release.
   },
   ios: {
     contentInset: 'always',

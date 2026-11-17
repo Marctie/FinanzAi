@@ -1,0 +1,89 @@
+// Stili condivisi delle funzioni account, wallet, carte fedeltà e notifiche (globali per restare nei
+// limiti di dimensione degli stili dei singoli componenti).
+
+.form-item {
+  --background: var(--surface-alt);
+  --border-radius: 12px;
+  --padding-start: 12px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.group-label { font-size: 14px; font-weight: 500; color: var(--ion-text-color); margin: 16px 0 10px; }
+.form-error { color: var(--ion-color-danger); font-size: 14px; margin: 8px 4px; }
+.hint { color: var(--text-muted); font-size: 13px; margin: 10px 4px 0; &.center { text-align: center; padding: 12px; } }
+.danger-btn { margin-top: 24px; }
+
+app-shared, app-wallet-detail {
+  .settings-group { padding: 0 16px; margin: 16px 0; }
+  ion-list.surface-card { background: var(--surface); border-radius: 16px; padding: 0; overflow: hidden; }
+}
+
+// Accesso
+.auth-intro { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin: 0 4px 16px; }
+.auth-submit { margin-top: 16px; }
+.auth-links { display: flex; flex-direction: column; align-items: center; margin-top: 12px; }
+.login-card {
+  padding: 20px; text-align: center;
+  h2 { margin: 8px 0; font-size: 20px; }
+  p { color: var(--text-muted); font-size: 14px; line-height: 1.5; }
+}
+.login-card-icon { font-size: 44px; color: var(--color-primary); }
+
+// Codice di recupero
+.recovery-box { text-align: center; p { line-height: 1.5; } }
+.recovery-icon { font-size: 48px; color: var(--color-primary); }
+.recovery-code {
+  font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 22px; font-weight: 700; letter-spacing: 2px;
+  background: var(--surface-alt); border-radius: 12px; padding: 16px 8px; margin: 20px 0; user-select: all;
+}
+.recovery-actions { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
+
+// Wallet
+.action-row { display: flex; gap: 8px; ion-button { flex: 1; } }
+.wallet-emoji { font-size: 26px; width: 34px; text-align: center; }
+ion-note.positive { color: var(--ion-color-success); }
+ion-note.negative { color: var(--ion-color-danger); }
+.wallet-summary { display: flex; justify-content: space-between; align-items: center; padding: 16px 18px;
+  span { color: var(--text-muted); } strong { font-size: 20px; } }
+.invite-card { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 14px 16px; }
+.invite-code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 22px; font-weight: 700; letter-spacing: 3px; flex: 1 1 100%; }
+.split-list { margin: 12px 0 4px; }
+.split-input { max-width: 90px; text-align: right; }
+.split-remainder { color: var(--text-muted); font-size: 13px; text-align: right; margin: 4px 4px 12px; }
+.sync-pill { display: inline-flex; padding: 6px 12px; font-size: 20px; color: var(--text-muted);
+  &.sync-synced { color: var(--ion-color-success); } &.sync-error { color: var(--ion-color-danger); }
+  &.sync-syncing ion-icon { animation: spin 1.2s linear infinite; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// Carte fedeltà
+.loyalty-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; padding: 0 16px 24px; }
+.loyalty-tile {
+  aspect-ratio: 1.586; border: 0; border-radius: 14px; padding: 14px; color: #fff; text-align: left; cursor: pointer;
+  display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 14px rgba(0, 0, 0, .15);
+  font: inherit;
+}
+.loyalty-store { font-size: 17px; font-weight: 700; overflow-wrap: anywhere; }
+.loyalty-meta { font-size: 12px; opacity: .9; display: flex; align-items: center; gap: 4px; }
+.color-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; }
+.color-dot { width: 34px; height: 34px; border-radius: 50%; border: 3px solid transparent; cursor: pointer;
+  &.active { border-color: var(--ion-text-color); } }
+.scan-btn { margin-bottom: 14px; }
+.scan-box { text-align: center; margin-bottom: 16px; }
+.scan-video { width: 100%; max-height: 50vh; border-radius: 12px; background: #000; object-fit: cover; }
+.barcode-wrap {
+  background: #fff; color: #000; border-radius: 12px; padding: 12px; margin: 4px 0 14px; text-align: center;
+  svg, canvas { max-width: 100%; height: auto; }
+  &.large { padding: 20px 12px; }
+}
+.barcode-number { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 16px; letter-spacing: 2px; margin: 6px 0 0;
+  &.big { font-size: 26px; font-weight: 700; } }
+.barcode-note { font-size: 12px; color: #a35a00; margin: 6px 0 0; }
+.card-view-toolbar { --color: #fff; }
+.card-view-content { --background: #f4f6f9; }
+.card-view-body { padding: 24px 16px; text-align: center; }
+.card-view-holder { font-size: 16px; font-weight: 600; color: #1d2633; }
+.card-view-shared, .card-view-tip { font-size: 13px; color: #5c6b7d; }
+
+// Notifiche
+.notify-intro { padding: 16px; margin-bottom: 12px; p { margin: 0 0 12px; line-height: 1.5; font-size: 14px; } }

@@ -1,0 +1,95 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Condivisi</ion-title>
+    <ion-buttons slot="end" *ngIf="user">
+      <span class="sync-pill" [class]="'sync-pill sync-' + status" [attr.aria-label]="'Stato sincronizzazione: ' + status">
+        <ion-icon [name]="status === 'offline' ? 'cloud-offline-outline' : status === 'error' ? 'alert-circle-outline' : status === 'syncing' ? 'sync-outline' : 'cloud-done-outline'"></ion-icon>
+      </span>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="segment" data-testid="shared-segment">
+      <ion-segment-button value="wallets"><ion-label>Wallet</ion-label></ion-segment-button>
+      <ion-segment-button value="cards" data-testid="segment-cards"><ion-label>Carte fedeltà</ion-label></ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($any($event))" *ngIf="user">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- ── WALLET ─────────────────────────────────────────────── -->
+  <ng-container *ngIf="segment === 'wallets'">
+    <div class="settings-group" *ngIf="!user">
+      <div class="surface-card login-card">
+        <ion-icon name="people-outline" class="login-card-icon"></ion-icon>
+        <h2>Spese condivise</h2>
+        <p>Crea un wallet, invita amici, coinquilini o partner con un codice e tieni traccia di chi ha pagato cosa.
+          FinanzAI calcola automaticamente chi deve a chi.</p>
+        <ion-button expand="block" shape="round" (click)="openAuth('signup')" data-testid="shared-signup">Crea un account</ion-button>
+        <ion-button expand="block" shape="round" fill="clear" (click)="openAuth('login')" data-testid="shared-login">Ho già un account</ion-button>
+      </div>
+    </div>
+
+    <ng-container *ngIf="user">
+      <div class="settings-group">
+        <div class="action-row">
+          <ion-button shape="round" (click)="createWallet()" data-testid="wallet-create">
+            <ion-icon name="add-outline" slot="start"></ion-icon>Nuovo wallet
+          </ion-button>
+          <ion-button shape="round" fill="outline" (click)="joinWallet()" data-testid="wallet-join">
+            <ion-icon name="enter-outline" slot="start"></ion-icon>Ho un codice
+          </ion-button>
+        </div>
+      </div>
+
+      <app-empty-state *ngIf="!wallets.length" emoji="👛" title="Nessun wallet"
+        subtitle="Crea un wallet per dividere le spese, oppure entra con il codice invito di qualcun altro.">
+      </app-empty-state>
+
+      <div class="settings-group" *ngIf="wallets.length">
+        <ion-list class="surface-card" lines="inset">
+          <ion-item *ngFor="let w of wallets; trackBy: trackWallet" button detail [routerLink]="['/tabs/shared/wallet', w.id]" data-testid="wallet-item">
+            <span slot="start" class="wallet-emoji">{{ w.emoji }}</span>
+            <ion-label>
+              <h3>{{ w.name }}</h3>
+              <p>{{ w.members.length }} {{ w.members.length === 1 ? 'membro' : 'membri' }} · {{ w.data.expenses.length }} spese</p>
+            </ion-label>
+            <ion-note slot="end" [class.positive]="myBalance(w) > 0.004" [class.negative]="myBalance(w) < -0.004">
+              <ng-container *ngIf="myBalance(w) > 0.004">ti devono {{ myBalance(w) | money:w.currency }}</ng-container>
+              <ng-container *ngIf="myBalance(w) < -0.004">devi {{ -myBalance(w) | money:w.currency }}</ng-container>
+              <ng-container *ngIf="myBalance(w) >= -0.004 && myBalance(w) <= 0.004">in pari</ng-container>
+            </ion-note>
+          </ion-item>
+        </ion-list>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <!-- ── CARTE FEDELTÀ ───────────────────────────────────────── -->
+  <ng-container *ngIf="segment === 'cards'">
+    <div class="settings-group">
+      <ion-button expand="block" shape="round" (click)="addCard()" data-testid="card-add">
+        <ion-icon name="add-outline" slot="start"></ion-icon>Aggiungi carta
+      </ion-button>
+      <p class="hint" *ngIf="!user">Le carte restano su questo dispositivo. Con un account puoi condividerle con i membri di un wallet.</p>
+    </div>
+
+    <app-empty-state *ngIf="!cards.length" emoji="💳" title="Nessuna carta fedeltà"
+      subtitle="Aggiungi le tue carte fedeltà: le mostri alla cassa direttamente dal telefono.">
+    </app-empty-state>
+
+    <div class="loyalty-grid">
+      <button *ngFor="let c of cards; trackBy: trackCard" type="button" class="loyalty-tile" [style.background]="c.card.color"
+        (click)="openCard(c)" data-testid="card-item">
+        <span class="loyalty-store">{{ c.card.store }}</span>
+        <span class="loyalty-meta">
+          <ion-icon [name]="c.walletId ? 'people-outline' : 'person-outline'"></ion-icon>
+          {{ c.walletName || 'Personale' }}
+        </span>
+      </button>
+    </div>
+  </ng-container>
+</ion-content>

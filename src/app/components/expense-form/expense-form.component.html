@@ -1,0 +1,74 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()" fill="clear" aria-label="Chiudi"><ion-icon name="close-outline" slot="icon-only"></ion-icon></ion-button>
+    </ion-buttons>
+    <ion-title>{{ expense ? 'Modifica spesa' : 'Nuova spesa' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="save()" fill="solid" shape="round" color="primary" data-testid="expense-save">Salva</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="create-outline" slot="start" color="medium"></ion-icon>
+    <ion-input [(ngModel)]="title" placeholder="Descrizione (es. Cena, Benzina)" maxlength="80" data-testid="expense-title"></ion-input>
+  </ion-item>
+
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="cash-outline" slot="start" color="medium"></ion-icon>
+    <ion-input [(ngModel)]="amount" type="number" inputmode="decimal" min="0.01" step="0.01"
+      [placeholder]="'Importo (' + wallet.currency + ')'" data-testid="expense-amount"></ion-input>
+  </ion-item>
+
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="calendar-outline" slot="start" color="medium"></ion-icon>
+    <ion-input [(ngModel)]="date" type="date" label="Data"></ion-input>
+  </ion-item>
+
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="pricetag-outline" slot="start" color="medium"></ion-icon>
+    <ion-select [(ngModel)]="category" label="Categoria" interface="action-sheet">
+      <ion-select-option *ngFor="let c of categories" [value]="c.id">{{ c.emoji }} {{ c.name }}</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="wallet-outline" slot="start" color="medium"></ion-icon>
+    <ion-select [(ngModel)]="paidBy" label="Pagato da" interface="action-sheet" data-testid="expense-paidby">
+      <ion-select-option *ngFor="let m of members" [value]="m.userId">{{ m.displayName }}{{ m.isMe ? ' (tu)' : '' }}</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <p class="group-label">Come si divide</p>
+  <ion-segment [value]="mode" (ionChange)="setMode($any($event.detail.value))" data-testid="expense-mode">
+    <ion-segment-button value="equal"><ion-label>Parti uguali</ion-label></ion-segment-button>
+    <ion-segment-button value="percent"><ion-label>Percentuale</ion-label></ion-segment-button>
+    <ion-segment-button value="amount"><ion-label>Importi</ion-label></ion-segment-button>
+  </ion-segment>
+
+  <ion-list class="surface-card split-list" lines="inset">
+    <ion-item *ngFor="let r of rows">
+      <ion-checkbox slot="start" [(ngModel)]="r.included" [attr.aria-label]="'Includi ' + r.name"></ion-checkbox>
+      <ion-label>
+        <h3>{{ r.name }}</h3>
+        <p *ngIf="r.included && preview(r.userId) !== null">deve {{ preview(r.userId) | money:wallet.currency }}</p>
+      </ion-label>
+      <ion-input *ngIf="mode !== 'equal' && r.included" slot="end" class="split-input" type="number" inputmode="decimal"
+        [(ngModel)]="r.value" [placeholder]="mode === 'percent' ? '%' : '0,00'" [attr.aria-label]="'Quota di ' + r.name"></ion-input>
+    </ion-item>
+  </ion-list>
+  <p class="split-remainder" *ngIf="remainder">{{ remainder }}</p>
+
+  <ion-item class="form-item" lines="none">
+    <ion-icon name="document-text-outline" slot="start" color="medium"></ion-icon>
+    <ion-input [(ngModel)]="notes" placeholder="Note (facoltative)" maxlength="200"></ion-input>
+  </ion-item>
+
+  <p class="form-error" *ngIf="error" role="alert" data-testid="expense-error">{{ error }}</p>
+
+  <ion-button *ngIf="expense" expand="block" fill="outline" color="danger" (click)="remove()" class="danger-btn">
+    <ion-icon name="trash-outline" slot="start"></ion-icon>Elimina spesa
+  </ion-button>
+</ion-content>

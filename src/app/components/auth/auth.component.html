@@ -1,0 +1,73 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()" fill="clear" aria-label="Chiudi">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form (ngSubmit)="submit()" class="auth-form">
+    <p class="auth-intro" *ngIf="mode === 'login'">
+      Con un account i tuoi dati si sincronizzano tra telefono e web e puoi condividere wallet e carte fedeltà.
+    </p>
+    <p class="auth-intro" *ngIf="mode === 'signup'">
+      L'account è attivo subito. Dopo la registrazione riceverai un <strong>codice di recupero</strong>: conservalo,
+      serve per reimpostare la password.
+    </p>
+    <p class="auth-intro" *ngIf="mode === 'recover'">
+      Inserisci la tua email, il <strong>codice di recupero</strong> che hai salvato e la nuova password.
+    </p>
+
+    <ion-item class="form-item" lines="none" *ngIf="mode === 'signup'">
+      <ion-icon name="person-outline" slot="start" color="medium"></ion-icon>
+      <ion-input name="displayName" [(ngModel)]="displayName" placeholder="Nome visibile agli altri membri"
+        maxlength="40" autocomplete="nickname" data-testid="auth-name"></ion-input>
+    </ion-item>
+
+    <ion-item class="form-item" lines="none">
+      <ion-icon name="mail-outline" slot="start" color="medium"></ion-icon>
+      <ion-input name="email" type="email" inputmode="email" [(ngModel)]="email" placeholder="Email"
+        autocomplete="email" data-testid="auth-email"></ion-input>
+    </ion-item>
+
+    <ion-item class="form-item" lines="none" *ngIf="mode === 'recover'">
+      <ion-icon name="key-outline" slot="start" color="medium"></ion-icon>
+      <ion-input name="code" [(ngModel)]="code" placeholder="Codice di recupero" autocapitalize="characters"
+        autocomplete="off" data-testid="auth-code"></ion-input>
+    </ion-item>
+
+    <ion-item class="form-item" lines="none">
+      <ion-icon name="lock-closed-outline" slot="start" color="medium"></ion-icon>
+      <ion-input name="password" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password"
+        [placeholder]="mode === 'recover' ? 'Nuova password (min. 8 caratteri)' : 'Password (min. 8 caratteri)'"
+        [autocomplete]="mode === 'login' ? 'current-password' : 'new-password'" data-testid="auth-password"></ion-input>
+      <ion-button slot="end" fill="clear" (click)="showPassword = !showPassword"
+        [attr.aria-label]="showPassword ? 'Nascondi password' : 'Mostra password'">
+        <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-item>
+
+    <ion-item class="form-item" lines="none" *ngIf="mode !== 'login'">
+      <ion-icon name="lock-closed-outline" slot="start" color="medium"></ion-icon>
+      <ion-input name="password2" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password2"
+        placeholder="Ripeti la password" autocomplete="new-password" data-testid="auth-password2"></ion-input>
+    </ion-item>
+
+    <p class="form-error" *ngIf="error" role="alert" data-testid="auth-error">{{ error }}</p>
+
+    <ion-button type="submit" expand="block" shape="round" [disabled]="busy" class="auth-submit" data-testid="auth-submit">
+      <ion-spinner *ngIf="busy" name="crescent"></ion-spinner>
+      <span *ngIf="!busy">{{ mode === 'login' ? 'Accedi' : mode === 'signup' ? 'Registrati' : 'Reimposta la password' }}</span>
+    </ion-button>
+  </form>
+
+  <div class="auth-links">
+    <ion-button fill="clear" size="small" *ngIf="mode !== 'login'" (click)="setMode('login')">Hai già un account? Accedi</ion-button>
+    <ion-button fill="clear" size="small" *ngIf="mode !== 'signup'" (click)="setMode('signup')" data-testid="auth-to-signup">Non hai un account? Registrati</ion-button>
+    <ion-button fill="clear" size="small" color="medium" *ngIf="mode === 'login'" (click)="setMode('recover')" data-testid="auth-to-recover">Password dimenticata?</ion-button>
+  </div>
+</ion-content>

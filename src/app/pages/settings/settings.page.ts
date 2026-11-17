@@ -1,5 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { ToastController, AlertController } from '@ionic/angular';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ToastController, AlertController, ModalController } from '@ionic/angular';
+import { Subscription } from 'rxjs';
+import { User } from '@supabase/supabase-js';
+import { environment } from '../../../environments/environment';
+import { AuthService } from '../../services/auth.service';
+import { NotificationService, PermissionState } from '../../services/notification.service';
+import { SyncService, SyncStatus } from '../../services/sync.service';
+import { CategoryService } from '../../services/category.service';
+import { AuthComponent } from '../../components/auth/auth.component';
+import { RecoveryCodeComponent } from '../../components/recovery-code/recovery-code.component';
+import { UserPreferences } from '../../models/user-preferences.model';
 import { ThemeService } from '../../services/theme.service';
 import { StorageService } from '../../services/storage.service';
 import { AnalyticsService } from '../../services/analytics.service';
@@ -12,10 +22,17 @@ import { ThemeMode } from '../../models/user-preferences.model';
   styleUrls: ['./settings.page.scss'],
   standalone: false,
 })
-export class SettingsPage implements OnInit {
+export class SettingsPage implements OnInit, OnDestroy {
   currentTheme: ThemeMode = 'system';
-  version = '1.0.0';
+  version = environment.appVersion;
   isImporting = false;
+  user: User | null = null;
+  displayName = '';
+  syncStatus: SyncStatus = 'idle';
+  permission: PermissionState = 'unsupported';
+  prefs!: UserPreferences;
+  recoveryCreatedAt: string | null | undefined = undefined;
+  private subs: Subscription[] = [];
 
   constructor(
     private themeService: ThemeService,
@@ -24,10 +41,185 @@ export class SettingsPage implements OnInit {
     private backup:       BackupService,
     private toast:        ToastController,
     private alertCtrl:    AlertController,
+    private modal:        ModalController,
+    public  auth:         AuthService,
+    public  notifications: NotificationService,
+    private sync:         SyncService,
+    private categories:   CategoryService,
   ) {}
 
   ngOnInit(): void {
     this.currentTheme = this.themeService.currentTheme;
+    this.subs.push(
+      this.auth.user$.subscribe(u => {
+        this.user = u;
+        this.recoveryCreatedAt = undefined;
+        if (u) this.auth.recoveryCodeCreatedAt().then(d => this.recoveryCreatedAt = d).catch(() => undefined);
+      }),
+      this.auth.displayName$.subscribe(() => this.displayName = this.auth.displayName),
+      this.sync.status$.subscribe(s => this.syncStatus = s),
+      this.notifications.permission$.subscribe(p => this.permission = p),
+      this.storage.preferences.subscribe(p => this.prefs = p),
+    );
+  }
+
+  ngOnDestroy(): void { this.subs.forEach(s => s.unsubscribe()); }
+
+  // ─── Account ───────────────────────────────────────────────────────────────
+  get syncLabel(): string {
+    const labels: Record<SyncStatus, string> = {
+      idle: 'In attesa',
+      syncing: 'Sincronizzazione…',
+      synced: 'Sincronizzato',
+      offline: 'Offline: le modifiche partiranno appena torna la rete',
+      error: 'Errore di sincronizzazione: riprovo a breve',
+    };
+    return labels[this.syncStatus];
+  }
+
+  async openAuth(mode: 'login' | 'signup'): Promise<void> {
+    const m = await this.modal.create({ component: AuthComponent, componentProps: { mode } });
+    await m.present();
+  }
+
+  async changeName(): Promise<void> {
+    const a = await this.alertCtrl.create({
+      header: 'Nome visibile', message: 'È il nome che vedono gli altri membri dei tuoi wallet.',
+      inputs: [{ name: 'name', value: this.displayName, attributes: { maxlength: 40 } }],
+      buttons: [{ text: 'Annulla', role: 'cancel' }, { text: 'Salva', role: 'confirm' }],
+    });
+    await a.present();
+    const { role, data } = await a.onDidDismiss();
+    const name = (data?.values?.name ?? '').trim();
+    if (role !== 'confirm' || !name) return;
+    try { await this.auth.setDisplayName(name); this.showToast('Nome aggiornato', 'success'); }
+    catch (e) { this.showToast((e as Error).message, 'danger'); }
+  }
+
+  async changePassword(): Promise<void> {
+    const a = await this.alertCtrl.create({
+      header: 'Cambia password',
+      inputs: [
+        { name: 'p1', type: 'password', placeholder: 'Nuova password (min. 8 caratteri)' },
+        { name: 'p2', type: 'password', placeholder: 'Ripeti la nuova password' },
+      ],
+      buttons: [{ text: 'Annulla', role: 'cancel' }, { text: 'Cambia', role: 'confirm' }],
+    });
+    await a.present();
+    const { role, data } = await a.onDidDismiss();
+    if (role !== 'confirm') return;
+    const { p1, p2 } = data.values;
+    if ((p1 ?? '').length < 8) { this.showToast('La password deve avere almeno 8 caratteri', 'warning'); return; }
+    if (p1 !== p2) { this.showToast('Le due password non coincidono', 'warning'); return; }
+    try { await this.auth.updatePassword(p1); this.showToast('Password cambiata', 'success'); }
+    catch (e) { this.showToast((e as Error).message, 'danger'); }
+  }
+
+  async newRecoveryCode(): Promise<void> {
+    if (this.recoveryCreatedAt) {
+      const a = await this.alertCtrl.create({
+        header: 'Nuovo codice di recupero?', message: 'Il codice attuale smetterà di funzionare.',
+        buttons: [{ text: 'Annulla', role: 'cancel' }, { text: 'Genera', role: 'confirm' }],
+      });
+      await a.present();
+      if ((await a.onDidDismiss()).role !== 'confirm') return;
+    }
+    try {
+      const code = await this.auth.createRecoveryCode();
+      this.recoveryCreatedAt = new Date().toISOString();
+      const m = await this.modal.create({ component: RecoveryCodeComponent, componentProps: { code }, backdropDismiss: false });
+      await m.present();
+    } catch (e) { this.showToast((e as Error).message, 'danger'); }
+  }
+
+  get recoveryLabel(): string {
+    if (this.recoveryCreatedAt === undefined) return '…';
+    if (!this.recoveryCreatedAt) return 'Non ancora creato';
+    return 'Creato il ' + new Date(this.recoveryCreatedAt).toLocaleDateString('it-IT');
+  }
+
+  async signOut(): Promise<void> {
+    const a = await this.alertCtrl.create({
+      header: 'Uscire dall’account?',
+      message: this.sync.pendingChanges
+        ? 'Ci sono modifiche non ancora sincronizzate: se esci adesso andranno perse. Collegati a internet e attendi la sincronizzazione.'
+        : 'I dati restano salvati nel tuo account e torneranno quando accedi di nuovo.',
+      buttons: [{ text: 'Annulla', role: 'cancel' }, { text: 'Esci', role: 'destructive' }],
+    });
+    await a.present();
+    if ((await a.onDidDismiss()).role === 'destructive') await this.auth.signOut();
+  }
+
+  async deleteAccount(): Promise<void> {
+    const a = await this.alertCtrl.create({
+      header: 'Eliminare l’account?',
+      message: 'Account, dati sincronizzati e appartenenza ai wallet verranno eliminati definitivamente. I wallet in cui restano altri membri non vengono cancellati. Scrivi ELIMINA per confermare.',
+      inputs: [{ name: 'confirm', placeholder: 'ELIMINA' }],
+      buttons: [{ text: 'Annulla', role: 'cancel' }, { text: 'Elimina', role: 'destructive' }],
+    });
+    await a.present();
+    const { role, data } = await a.onDidDismiss();
+    if (role !== 'destructive' || (data?.values?.confirm ?? '').trim().toUpperCase() !== 'ELIMINA') return;
+    try { await this.notifications.disablePush(); await this.auth.deleteAccount(); }
+    catch (e) { this.showToast((e as Error).message, 'danger'); }
+  }
+
+  // ─── Notifiche ─────────────────────────────────────────────────────────────
+  /** L'interruttore è acceso solo se la preferenza è attiva E il permesso di sistema è concesso. */
+  get notificationsOn(): boolean {
+    return !!this.prefs?.notificationsEnabled && this.permission === 'granted';
+  }
+
+  /** Chiamata direttamente dal tocco dell'utente (iOS mostra la richiesta di sistema solo così). */
+  async toggleNotifications(ev: CustomEvent): Promise<void> {
+    const want = (ev.detail as { checked: boolean }).checked;
+    if (want === this.notificationsOn) return;
+    if (!want) {
+      this.updatePrefs({ notificationsEnabled: false });
+      await this.notifications.disablePush();
+      return;
+    }
+    await this.enableNotifications();
+  }
+
+  async enableNotifications(): Promise<void> {
+    const r = await this.notifications.activate();
+    if (r === 'granted') {
+      this.updatePrefs({ notificationsEnabled: true });
+      this.showToast('Notifiche attivate', 'success');
+      return;
+    }
+    this.updatePrefs({ notificationsEnabled: false });
+    let msg: string;
+    if (r === 'needs-home-screen') {
+      msg = 'Su iPhone le notifiche funzionano solo con l’app nella schermata Home: in Safari tocca Condividi, poi "Aggiungi a schermata Home", e apri FinanzAI da lì.';
+    } else if (r === 'unsupported') {
+      msg = 'Questo browser non supporta le notifiche.';
+    } else if (this.notifications.isNative) {
+      msg = 'Permesso negato. Puoi attivarlo da Impostazioni di Android, App, FinanzAI, Notifiche.';
+    } else {
+      msg = 'Permesso negato. Puoi riattivarlo dalle impostazioni del sito nel browser o, su iPhone, da Impostazioni, Notifiche, FinanzAI.';
+    }
+    const a = await this.alertCtrl.create({ header: 'Notifiche non attive', message: msg, buttons: ['OK'] });
+    await a.present();
+  }
+
+  updatePrefs(patch: Partial<UserPreferences>): void {
+    this.storage.savePreferences({ ...this.storage.prefsSnapshot, ...patch });
+  }
+
+  setPref(key: keyof UserPreferences, ev: CustomEvent): void {
+    this.updatePrefs({ [key]: (ev.detail as { checked: boolean }).checked } as Partial<UserPreferences>);
+  }
+
+  setNotifyTime(ev: CustomEvent): void {
+    const v = String((ev.detail as { value?: string }).value ?? '');
+    const m = /(\d{2}):(\d{2})/.exec(v);
+    if (m) this.updatePrefs({ notifyTime: `${m[1]}:${m[2]}` });
+  }
+
+  async sendTest(): Promise<void> {
+    this.showToast(await this.notifications.sendTest(), 'medium');
   }
 
   setTheme(mode: ThemeMode): void {
@@ -136,6 +328,22 @@ export class SettingsPage implements OnInit {
   }
 
   async clearData(): Promise<void> {
+    if (this.user) {
+      // Con l'account: si svuotano i dati personali e la sincronizzazione li cancella anche online.
+      const a = await this.alertCtrl.create({
+        header: 'Cancellare tutti i dati?',
+        message: 'Movimenti, budget, obiettivi, categorie e carte personali verranno eliminati su tutti i tuoi dispositivi. I wallet condivisi non vengono toccati. Resta un backup automatico locale.',
+        buttons: [{ text: 'Annulla', role: 'cancel' }, { text: 'Cancella', role: 'destructive' }],
+      });
+      await a.present();
+      if ((await a.onDidDismiss()).role !== 'destructive') return;
+      await this.backup.autoBackup();
+      this.storage.restoreAll({ transactions: [], budgets: [], goals: [], preferences: this.storage.prefsSnapshot });
+      this.storage.loyaltyCardsSnapshot.forEach(c => this.storage.deleteLoyaltyCard(c.id));
+      this.categories.restoreCustom([]);
+      this.showToast('Dati cancellati', 'success');
+      return;
+    }
     if (confirm('Vuoi davvero eliminare tutti i dati? Questa azione non è reversibile. (Verrà comunque conservato un backup automatico di sicurezza, ripristinabile in seguito.)')) {
       await this.backup.autoBackup();
       const AUTO_BACKUP_KEY = 'finanzai_auto_backup';

@@ -12,6 +12,116 @@
     <p class="app-version">v{{ version }}</p>
   </div>
 
+  <!-- Account -->
+  <div class="settings-group animate-in">
+    <p class="section-title">Account</p>
+    <div class="surface-card login-card" *ngIf="!user">
+      <p>Accedi per sincronizzare i dati tra telefono e web e condividere wallet e carte fedeltà. Senza account l'app funziona
+        comunque, con i dati solo su questo dispositivo.</p>
+      <ion-button expand="block" shape="round" (click)="openAuth('signup')" data-testid="settings-signup">Crea un account</ion-button>
+      <ion-button expand="block" shape="round" fill="clear" (click)="openAuth('login')" data-testid="settings-login">Accedi</ion-button>
+    </div>
+    <ion-list class="surface-card" lines="inset" *ngIf="user">
+      <ion-item>
+        <ion-icon name="person-circle-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>
+          <h3 data-testid="settings-email">{{ user.email }}</h3>
+          <p>{{ syncLabel }}</p>
+        </ion-label>
+      </ion-item>
+      <ion-item button detail="false" (click)="changeName()">
+        <ion-icon name="happy-outline" slot="start" color="primary"></ion-icon>
+        <ion-label><h3>Nome visibile</h3><p>{{ displayName }}</p></ion-label>
+      </ion-item>
+      <ion-item button detail="false" (click)="newRecoveryCode()" data-testid="settings-recovery">
+        <ion-icon name="key-outline" slot="start" color="primary"></ion-icon>
+        <ion-label><h3>Codice di recupero password</h3><p>{{ recoveryLabel }} · tocca per generarne uno nuovo</p></ion-label>
+      </ion-item>
+      <ion-item button detail="false" (click)="changePassword()">
+        <ion-icon name="lock-closed-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>Cambia password</ion-label>
+      </ion-item>
+      <ion-item button detail="false" (click)="signOut()" data-testid="settings-logout">
+        <ion-icon name="log-out-outline" slot="start" color="medium"></ion-icon>
+        <ion-label>Esci</ion-label>
+      </ion-item>
+      <ion-item button detail="false" (click)="deleteAccount()" lines="none">
+        <ion-icon name="person-remove-outline" slot="start" color="danger"></ion-icon>
+        <ion-label color="danger">Elimina account</ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Notifiche -->
+  <div class="settings-group animate-in" *ngIf="prefs">
+    <p class="section-title">Notifiche</p>
+
+    <div class="surface-card notify-intro" *ngIf="permission !== 'granted'">
+      <ng-container *ngIf="notifications.needsHomeScreenInstall">
+        <p><strong>Su iPhone serve un passaggio in più.</strong> Le notifiche funzionano solo se FinanzAI è nella schermata
+          Home (iOS 16.4 o successivo): in Safari tocca <strong>Condividi</strong> → <strong>Aggiungi a schermata Home</strong>,
+          poi apri l'app dall'icona e torna qui.</p>
+      </ng-container>
+      <ng-container *ngIf="!notifications.needsHomeScreenInstall && permission === 'prompt'">
+        <p>Ricevi un promemoria per i <strong>pagamenti ricorrenti</strong>, quando un <strong>budget</strong> sta per finire,
+          per gli <strong>obiettivi</strong> in scadenza e quando qualcuno aggiunge una spesa in un tuo wallet.</p>
+        <ion-button expand="block" shape="round" (click)="enableNotifications()" data-testid="notify-enable">
+          <ion-icon name="notifications-outline" slot="start"></ion-icon>Attiva le notifiche
+        </ion-button>
+      </ng-container>
+      <p *ngIf="permission === 'denied'">Le notifiche sono bloccate dalle impostazioni di sistema. Per riceverle riattivale
+        {{ notifications.isNative ? 'in Impostazioni → App → FinanzAI → Notifiche' : 'dalle impostazioni del sito nel browser' }}.</p>
+      <p *ngIf="permission === 'unsupported' && !notifications.needsHomeScreenInstall">Questo browser non supporta le notifiche.</p>
+    </div>
+
+    <ion-list class="surface-card" lines="inset">
+      <ion-item>
+        <ion-icon name="notifications-outline" slot="start" color="primary"></ion-icon>
+        <ion-toggle [checked]="notificationsOn" (ionChange)="toggleNotifications($any($event))"
+          [disabled]="permission === 'unsupported' || permission === 'denied'" data-testid="notify-toggle">
+          Notifiche attive
+        </ion-toggle>
+      </ion-item>
+      <ng-container *ngIf="notificationsOn">
+        <ion-item>
+          <ion-icon name="time-outline" slot="start" color="primary"></ion-icon>
+          <ion-label>Orario promemoria</ion-label>
+          <ion-datetime-button datetime="notifyTime" slot="end"></ion-datetime-button>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="repeat-outline" slot="start" color="primary"></ion-icon>
+          <ion-toggle [checked]="prefs.notifyRecurring" (ionChange)="setPref('notifyRecurring', $any($event))">Pagamenti ricorrenti</ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="pie-chart-outline" slot="start" color="primary"></ion-icon>
+          <ion-toggle [checked]="prefs.budgetAlertEnabled" (ionChange)="setPref('budgetAlertEnabled', $any($event))">Budget quasi esaurito</ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="flag-outline" slot="start" color="primary"></ion-icon>
+          <ion-toggle [checked]="prefs.notifyGoals" (ionChange)="setPref('notifyGoals', $any($event))">Obiettivi in scadenza</ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="people-outline" slot="start" color="primary"></ion-icon>
+          <ion-toggle [checked]="prefs.notifyWalletExpenses" (ionChange)="setPref('notifyWalletExpenses', $any($event))">Spese nei wallet</ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-icon name="card-outline" slot="start" color="primary"></ion-icon>
+          <ion-toggle [checked]="prefs.notifyLoyaltyCards" (ionChange)="setPref('notifyLoyaltyCards', $any($event))">Carte fedeltà condivise</ion-toggle>
+        </ion-item>
+        <ion-item button detail="false" (click)="sendTest()" lines="none" data-testid="notify-test">
+          <ion-icon name="paper-plane-outline" slot="start" color="primary"></ion-icon>
+          <ion-label>Invia una notifica di prova</ion-label>
+        </ion-item>
+      </ng-container>
+    </ion-list>
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="notifyTime" presentation="time" [value]="'2000-01-01T' + prefs.notifyTime + ':00'"
+          (ionChange)="setNotifyTime($any($event))" [showDefaultButtons]="true" doneText="OK" cancelText="Annulla" locale="it-IT"></ion-datetime>
+      </ng-template>
+    </ion-modal>
+  </div>
+
   <!-- Tema -->
   <div class="settings-group animate-in">
     <p class="section-title">Aspetto</p>

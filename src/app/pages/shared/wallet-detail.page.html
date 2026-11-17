@@ -1,0 +1,131 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/shared" text=""></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ wallet?.emoji }} {{ wallet?.name || 'Wallet' }}</ion-title>
+    <ion-buttons slot="end" *ngIf="wallet">
+      <ion-button (click)="shareInvite()" aria-label="Invita" data-testid="wallet-invite"><ion-icon name="person-add-outline" slot="icon-only"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar *ngIf="wallet">
+    <ion-segment [(ngModel)]="segment" scrollable>
+      <ion-segment-button value="expenses"><ion-label>Spese</ion-label></ion-segment-button>
+      <ion-segment-button value="balances" data-testid="segment-balances"><ion-label>Saldi</ion-label></ion-segment-button>
+      <ion-segment-button value="cards"><ion-label>Carte</ion-label></ion-segment-button>
+      <ion-segment-button value="members" data-testid="segment-members"><ion-label>Membri</ion-label></ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-empty-state *ngIf="!wallet" emoji="🔎" title="Wallet non trovato"
+    subtitle="Potresti essere uscito o essere stato rimosso dal wallet." actionLabel="Torna ai wallet" actionRoute="/tabs/shared">
+  </app-empty-state>
+
+  <ng-container *ngIf="wallet">
+    <!-- Spese -->
+    <ng-container *ngIf="segment === 'expenses'">
+      <div class="settings-group">
+        <div class="surface-card wallet-summary">
+          <span>Totale spese</span>
+          <strong>{{ total | money:wallet.currency }}</strong>
+        </div>
+      </div>
+      <app-empty-state *ngIf="!expenses.length" emoji="🧾" title="Nessuna spesa" subtitle="Tocca + per aggiungere la prima spesa condivisa."></app-empty-state>
+      <div class="settings-group" *ngIf="expenses.length">
+        <ion-list class="surface-card" lines="inset">
+          <ion-item *ngFor="let e of expenses; trackBy: trackById" button detail="false" (click)="addExpense(e)" data-testid="expense-item">
+            <span slot="start" class="wallet-emoji">{{ e.isSettlement ? '🤝' : emoji(e.category) }}</span>
+            <ion-label>
+              <h3>{{ e.isSettlement ? 'Rimborso a ' + name(e.shares[0]?.userId) : e.title }}</h3>
+              <p>{{ name(e.paidBy) }} {{ e.isSettlement ? 'ha restituito' : 'ha pagato' }} · {{ fmtDate(e.date) }}</p>
+            </ion-label>
+            <ion-note slot="end">{{ e.amount | money:wallet.currency }}</ion-note>
+          </ion-item>
+        </ion-list>
+      </div>
+      <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+        <ion-fab-button (click)="addExpense()" aria-label="Nuova spesa" data-testid="expense-add"><ion-icon name="add"></ion-icon></ion-fab-button>
+      </ion-fab>
+    </ng-container>
+
+    <!-- Saldi -->
+    <ng-container *ngIf="segment === 'balances'">
+      <div class="settings-group">
+        <p class="section-title">Chi deve a chi</p>
+        <div class="surface-card" *ngIf="!settlements.length"><p class="hint center">Tutti in pari 🎉</p></div>
+        <ion-list class="surface-card" lines="inset" *ngIf="settlements.length">
+          <ion-item *ngFor="let s of settlements" data-testid="settlement-item">
+            <ion-label>
+              <h3 *ngIf="s.from === myId">Devi <strong>{{ s.amount | money:wallet.currency }}</strong> a <strong>{{ name(s.to) }}</strong></h3>
+              <h3 *ngIf="s.from !== myId"><strong>{{ name(s.from) }}</strong> deve <strong>{{ s.amount | money:wallet.currency }}</strong> a <strong>{{ s.to === myId ? 'te' : name(s.to) }}</strong></h3>
+            </ion-label>
+            <ion-button slot="end" size="small" fill="outline" shape="round" (click)="settle(s)">Saldato</ion-button>
+          </ion-item>
+        </ion-list>
+      </div>
+      <div class="settings-group">
+        <p class="section-title">Saldi dei membri</p>
+        <ion-list class="surface-card" lines="inset">
+          <ion-item *ngFor="let b of balances">
+            <ion-label>
+              <h3>{{ name(b.userId) }}</h3>
+              <p>ha pagato {{ b.paid | money:wallet.currency }} · quota {{ b.owed | money:wallet.currency }}</p>
+            </ion-label>
+            <ion-note slot="end" [class.positive]="b.net > 0.004" [class.negative]="b.net < -0.004">
+              {{ b.net > 0.004 ? '+' : '' }}{{ b.net | money:wallet.currency }}
+            </ion-note>
+          </ion-item>
+        </ion-list>
+      </div>
+    </ng-container>
+
+    <!-- Carte -->
+    <ng-container *ngIf="segment === 'cards'">
+      <div class="settings-group">
+        <ion-button expand="block" shape="round" (click)="addCard()"><ion-icon name="add-outline" slot="start"></ion-icon>Condividi una carta</ion-button>
+      </div>
+      <app-empty-state *ngIf="!wallet.data.loyaltyCards.length" emoji="💳" title="Nessuna carta condivisa"
+        subtitle="Le carte aggiunte qui sono visibili a tutti i membri del wallet."></app-empty-state>
+      <div class="loyalty-grid">
+        <button *ngFor="let c of wallet.data.loyaltyCards; trackBy: trackById" type="button" class="loyalty-tile" [style.background]="c.color" (click)="openCard(c)">
+          <span class="loyalty-store">{{ c.store }}</span>
+          <span class="loyalty-meta"><ion-icon name="person-outline"></ion-icon>{{ c.createdBy ? name(c.createdBy) : '' }}</span>
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- Membri -->
+    <ng-container *ngIf="segment === 'members'">
+      <div class="settings-group">
+        <p class="section-title">Codice invito</p>
+        <div class="surface-card invite-card">
+          <span class="invite-code" data-testid="invite-code">{{ wallet.inviteCode }}</span>
+          <ion-button fill="outline" shape="round" size="small" (click)="shareInvite()">Condividi</ion-button>
+          <ion-button *ngIf="wallet.role === 'owner'" fill="clear" size="small" color="medium" (click)="regenerateInvite()">Cambia codice</ion-button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <p class="section-title">Membri</p>
+        <ion-list class="surface-card" lines="inset">
+          <ion-item *ngFor="let m of wallet.members" data-testid="member-item">
+            <ion-icon slot="start" [name]="m.role === 'owner' ? 'star-outline' : 'person-outline'" color="primary"></ion-icon>
+            <ion-label>
+              <h3>{{ m.displayName }}{{ m.isMe ? ' (tu)' : '' }}</h3>
+              <p>{{ m.role === 'owner' ? 'Proprietario' : 'Membro' }}</p>
+            </ion-label>
+            <ion-button *ngIf="wallet.role === 'owner' && !m.isMe" slot="end" fill="clear" color="danger" (click)="removeMember(m.userId)"
+              [attr.aria-label]="'Rimuovi ' + m.displayName"><ion-icon name="person-remove-outline" slot="icon-only"></ion-icon></ion-button>
+          </ion-item>
+        </ion-list>
+      </div>
+      <div class="settings-group">
+        <ion-list class="surface-card" lines="inset">
+          <ion-item button detail="false" (click)="rename()"><ion-icon name="create-outline" slot="start" color="primary"></ion-icon><ion-label>Rinomina wallet</ion-label></ion-item>
+          <ion-item button detail="false" (click)="leave()" lines="none"><ion-icon name="exit-outline" slot="start" color="danger"></ion-icon><ion-label color="danger">Esci dal wallet</ion-label></ion-item>
+        </ion-list>
+      </div>
+    </ng-container>
+  </ng-container>
+</ion-content>

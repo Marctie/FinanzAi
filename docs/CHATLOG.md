@@ -131,3 +131,42 @@ Richiesta utente: continuare autonomamente fino al completamento di tutto quanto
 - Safe area: variabili Ionic collegate a `env(safe-area-inset-*)`, onboarding (unica schermata senza header) con padding dedicato.
 - Workflow rinominato in `.github/workflows/pages.yml`, Node 22. Script `build:web` e `build:android` separati. Il vecchio branch `gh-pages` non è più usato (Pages pubblica tramite Actions).
 - Test: build web con base `/FinanzAi/` verificata in Edge headless via CDP (service worker attivo sullo scope corretto, manifest e icona iOS raggiungibili, app funzionante anche offline). Build Android con base `/`, APK installato e avviato sull'emulatore: l'app si apre normalmente e il service worker non viene registrato.
+
+## 2026-11-17 — Fase 2: account Supabase, schema e RLS (versione 1.1.0)
+- `supabase/schema.sql` (rieseguibile), applicato con `scripts/apply-schema.mjs` via Management API: `profiles`, `personal_data`, `wallets`, `wallet_members`, `user_settings`, `push_subscriptions`, `recovery_codes`, `recovery_attempts`, `app_events`. RLS attiva su tutte le 9 tabelle; privilegi per colonna (i membri non possono cambiare codice invito o autore); funzioni `create_wallet`, `join_wallet`, `leave_wallet`, `regenerate_invite_code`, `remove_wallet_member`, `set_display_name`, `delete_my_account`.
+- Supabase Auth: accesso immediato senza conferma email (nessun SMTP), password minima 8, URL della web app.
+- Recupero password: su richiesta, niente email né bot ma **codice di recupero personale** creato al primo accesso (come Dispensina): mostrato una volta, salvato come hash bcrypt, verificato dalla Edge Function `recover-password` (max 5 errori/ora), sostituito dopo l'uso.
+- App: `AuthService`, finestra Accedi/Registrati/Password dimenticata, finestra del codice di recupero, sezione Account nelle Impostazioni (nome visibile, nuovo codice, cambio password, esci, elimina account).
+
+## 2026-11-17 — Fase 3: sincronizzazione offline-first
+- `DocSync`: documento JSON con `version`, salvataggio `where version = N`, ripetizione in caso di conflitto, unione a tre vie (`core/merge.util.ts`: per elemento e per campo, vince `updatedAt` più recente sullo stesso campo, la modifica vince sulla cancellazione), base salvata in locale.
+- `SyncService`: dati personali + preferenze personali separate (`user_settings`) + wallet; coda locale (le modifiche offline partono al ritorno della rete), Supabase Realtime su `personal_data`, `wallets`, `wallet_members`. Al primo login i dati locali vengono uniti all'account (dati di esempio esclusi); dati di un altro account sul dispositivo vengono scartati.
+- 11 test di unità (`tests/logic.test.mts`) su unione, suddivisioni e saldi.
+
+## 2026-11-17 — Fase 4: wallet condivisi e carte fedeltà
+- Nuova scheda **Condivisi**: wallet (crea, entra con codice invito, membri, rinomina, esci) e dettaglio con Spese, Saldi ("chi deve a chi" semplificato, pulsante "Saldato" che registra il rimborso), Carte, Membri.
+- Spese: chi ha pagato, importo, suddivisione in parti uguali / percentuale / importi con anteprima e controllo delle somme; arrotondamento ai centesimi con il metodo dei resti maggiori.
+- Carte fedeltà (richiesta aggiunta durante il lavoro): personali o condivise con un wallet; codice a barre (JsBarcode) o QR mostrato a schermo intero; scansione con ML Kit (Android, senza permesso fotocamera) o zxing (web/iPhone).
+
+## 2026-11-17 — Fase 5: notifiche
+- Planner unico `src/app/notifications/planner.ts` (pagamenti ricorrenti, budget oltre soglia, obiettivi in scadenza, messaggi dei wallet), copiato nelle funzioni da `scripts/deploy-functions.mjs`.
+- Edge Functions `notify-expense`, `push-test`, `daily-reminders` (pg_cron ogni 15 minuti, segreto nel Vault, orario e fuso dell'utente) + VAPID; service worker con gestione push e apertura della pagina giusta al tocco.
+- Android: canali dedicati, icona di stato, promemoria pianificati, avviso locale quando un altro membro aggiunge spese/carte ad app in background, sempre `isExactNotification: false`; tolto dal manifest `SCHEDULE_EXACT_ALARM` aggiunto dal plugin (non serve e il Play Store lo limita).
+- In app: avviso a comparsa con pulsante "Apri" quando un altro membro modifica un wallet.
+- Permesso chiesto solo dal tocco, con richiesta guidata e interruttore legato allo stato reale del permesso; spiegazione per iPhone senza app nella schermata Home.
+
+## 2026-11-17 — Fase 6: telemetria
+- `TelemetryService` (da Dispensina): coda locale, ID casuale per installazione, eventi senza contenuti, tutti gli errori (ErrorHandler globale, `window.onerror`, promesse, `console.error`, errori di sincronizzazione, errori prima dell'avvio).
+- `app_events`: i client possono solo inserire (verificato: lettura e `user_label` falsificato rifiutati con 401); nome utente aggiunto dal trigger; evento `nuovo_utente` creato da un trigger su `auth.users`.
+
+## 2026-11-17 — Fase 7: bot Telegram FinanzAIBot
+- Cartella `Bot Telegram/FinanzAIBot` (derivata da Dispence-Track): lettura ogni 15 s, risposta solo all'amministratore, comandi `/stato /oggi /utenti /errori /errore N /risolto N /ultimi N /notifiche on|off /aiuto`, **messaggio dedicato per ogni nuovo utente** (anche con avvisi spenti o in arretrato). 11 test offline superati.
+- Registrato nel Bot Control Center (make_config.py, config.json e copia accanto all'.exe, con backup `.bak_prima_finanzai_bot`).
+- Verificato: con il bot spento l'evento resta in coda e viene consegnato alla riaccensione.
+
+## 2026-11-17 — Fase 8: test E2E, privacy, pubblicazione
+- Web (Edge headless + CDP, due utenti): 12 passi superati, nessun errore in console. Trovati e corretti durante i test: proprietà `modal` riservata da Ionic nei componenti finestra (rinominata `modalCtrl`), testo "Tu deve" → "Devi", evento di recupero password registrato senza utente.
+- Android (emulatore + DevTools della WebView): 7 passi superati, comprese le notifiche (permesso dopo il tocco, notifica di prova, promemoria pianificati, notifica in background per la spesa di un altro membro), ripetuti dopo la rimozione di `SCHEDULE_EXACT_ALARM`.
+- Utenti di test `@example.org`, i loro wallet ed eventi cancellati (`tests/e2e/cleanup.mjs`).
+- Privacy policy IT/EN riscritta e pubblicata (account, Supabase UE, wallet, notifiche, diagnostica con ID casuale di installazione, eliminazione account); testi della guida e della presentazione aggiornati.
+- Numero di versione unico (`scripts/bump-version.mjs`): 1.1.0, Android versionCode 2. AAB e APK di release firmati con il keystore della 1.0; istruzioni per Play Console (note di rilascio, Sicurezza dei dati, accesso all'app) in `docs/AGGIORNAMENTO_PLAY_1.1.0.md`.
