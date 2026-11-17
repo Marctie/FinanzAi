@@ -24,6 +24,11 @@
               "src/manifest.webmanifest",
               "src/sw.js",
               {
+                "glob": "sql-wasm-browser.wasm",
+                "input": "node_modules/sql.js/dist",
+                "output": "assets/sqljs"
+              },
+              {
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"

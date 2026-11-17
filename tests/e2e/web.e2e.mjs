@@ -34,7 +34,7 @@ async function person(label) {
   // Niente presentazione iniziale, e niente Web Share (aprirebbe la finestra di sistema).
   await p.eval('1');
   await (async () => {
-    const script = `try { localStorage.setItem('finanzai_onboarded', '1'); } catch {}
+    const script = `try { localStorage.setItem('finanzai_onboarded', '1'); localStorage.setItem('finanzai_telemetry_local', '1'); } catch {}
       try { delete Navigator.prototype.share; } catch {}`;
     await p.eval(`void 0`);
     p._init = script;

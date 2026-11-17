@@ -2,7 +2,7 @@
 // Le chiavi segrete (service_role, secret, VAPID privata) stanno solo in keystore-privato/ e nelle Edge Functions.
 export const environment = {
   production: false,
-  appVersion: '1.1.0',
+  appVersion: '1.1.1',
   webUrl: 'https://marctie.github.io/FinanzAi/',
   supabase: {
     url: 'https://asjdvcdvbtiphizjjhzm.supabase.co',

@@ -91,6 +91,13 @@ export async function connectBrowser(port = 9333) {
         await page.eval(`[...document.querySelectorAll('ion-alert button')].find(b => b.textContent.trim() === ${JSON.stringify(button)}).click()`);
         await sleep(800);
       },
+      /** Imposta un file in un <input type=file> (come se l'utente lo scegliesse) e fa partire "change". */
+      async setFile(sel, path) {
+        const { root } = await s('DOM.getDocument', { depth: -1, pierce: true });
+        const { nodeId } = await s('DOM.querySelector', { nodeId: root.nodeId, selector: sel });
+        await s('DOM.setFileInputFiles', { files: [path], nodeId });
+        await sleep(300);
+      },
       async offline(on) {
         await s('Network.emulateNetworkConditions', { offline: on, latency: 0, downloadThroughput: -1, uploadThroughput: -1 });
         await page.eval(`window.dispatchEvent(new Event(${JSON.stringify(on ? 'offline' : 'online')}))`);

@@ -18,6 +18,7 @@ import { LoyaltyCardFormComponent } from './loyalty-card-form/loyalty-card-form.
 import { LoyaltyCardViewComponent } from './loyalty-card-view/loyalty-card-view.component';
 import { ExpenseFormComponent }    from './expense-form/expense-form.component';
 import { MoneyPipe }               from './pipes/money.pipe';
+import { MmImportComponent }       from './mm-import/mm-import.component';
 
 const COMPONENTS = [
   LogoComponent,
@@ -34,6 +35,7 @@ const COMPONENTS = [
   LoyaltyCardViewComponent,
   ExpenseFormComponent,
   MoneyPipe,
+  MmImportComponent,
 ];
 
 @NgModule({

@@ -156,6 +156,24 @@ export class StorageService {
     this.loyaltyCards$.next(list);
   }
 
+  // ─── Importazione da altre app (aggiunge/aggiorna per id, non sostituisce) ─
+  importData(d: { transactions: Transaction[]; budgets: Budget[] }): { added: number; updated: number } {
+    const byId = new Map(this.transactions$.value.map(t => [t.id, t]));
+    let added = 0, updated = 0;
+    for (const t of d.transactions) { byId.has(t.id) ? updated++ : added++; byId.set(t.id, t); }
+    const list = [...byId.values()].sort((a, b) => b.date.localeCompare(a.date));
+    const budgets = [...this.budgets$.value];
+    for (const b of d.budgets) {
+      const i = budgets.findIndex(x => x.id === b.id || x.categoryId === b.categoryId);
+      if (i < 0) budgets.push(b); else if (budgets[i].id === b.id) budgets[i] = b;   // un budget già creato a mano resta
+    }
+    this.save(KEYS.transactions, list);
+    this.save(KEYS.budgets, budgets);
+    this.transactions$.next(list);
+    this.budgets$.next(budgets);
+    return { added, updated };
+  }
+
   // ─── Sincronizzazione account ──────────────────────────────────────────────
   collectPersonal(): PersonalSnapshot {
     return {

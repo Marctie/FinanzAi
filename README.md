@@ -3,7 +3,7 @@
 App di finanza personale (Angular 20 + Ionic 8 + Capacitor 8) per **Android** (Play Store, `com.finanzai.app`) e come
 **web app installabile su iPhone** (PWA su GitHub Pages: https://marctie.github.io/FinanzAi/).
 
-**Versione attuale: 1.1.0** (Android versionCode 2) · storico in [docs/CHATLOG.md](docs/CHATLOG.md)
+**Versione attuale: 1.1.1** (Android versionCode 3) · storico in [docs/CHATLOG.md](docs/CHATLOG.md)
 
 ## Funzioni
 
@@ -18,6 +18,10 @@ App di finanza personale (Angular 20 + Ionic 8 + Capacitor 8) per **Android** (P
 - **Notifiche**: promemoria giornalieri all'orario scelto (pagamenti ricorrenti, budget quasi esaurito, obiettivi in
   scadenza) e avvisi quando un altro membro aggiunge/modifica spese o condivide carte. Android: notifiche locali;
   web/iPhone: Web Push (VAPID); dentro l'app: avviso a comparsa.
+- **Importazione da Money Manager** (`.mmbackup`): Altro → Backup e dati → "Importa da Money Manager". Il file viene
+  aperto sul dispositivo (fflate + sql.js/WebAssembly, caricati solo quando servono), con anteprima e abbinamento delle
+  categorie modificabile; i movimenti vengono aggiunti (id stabili `mm-…`, nessun doppione reimportando), i limiti di
+  categoria diventano budget e i pagamenti periodici movimenti ricorrenti. Logica in `src/app/core/mmbackup.ts`.
 - **Telemetria senza contenuti** + **bot Telegram per l'amministratore** (`Bot Telegram/FinanzAIBot`).
 
 ## Stato dei lavori
@@ -101,6 +105,8 @@ se sul dispositivo c'erano dati di un altro account vengono scartati.
 - `TelemetryService`: azioni (login, nuovo utente, wallet creato/entrato, spesa aggiunta/modificata/eliminata, carte,
   notifiche…) **senza contenuti** (mai importi, descrizioni, nomi, numeri di carte, codici, email) e **tutti gli
   errori** (ErrorHandler globale, `window.onerror`, promesse non gestite, `console.error`, errori di sincronizzazione).
+- Le build provate in locale (`localhost` sul web) non inviano telemetria (per i test: `localStorage.finanzai_telemetry_local = '1'`).
+- Dopo un nuovo deploy, un `ChunkLoadError` (pezzo di codice della versione precedente) ricarica la pagina una volta.
 - Coda locale `telemetry_queue` → tabella `app_events` (solo INSERT per i client). Il nome utente lo aggiunge il
   **trigger** `telemetry_before_insert`; l'evento `nuovo_utente` lo crea un trigger su `auth.users`.
 - ID dispositivo: **ID casuale per installazione** (`telemetry_device`), nessun ID hardware o pubblicitario.
@@ -127,7 +133,7 @@ npm run build:android              # build Android, base /  + npx cap sync andro
 npm run version:patch              # nuova versione (package, app, versionName, versionCode+1) — a ogni intervento
 npm run db:apply                   # applica supabase/schema.sql + configurazione Auth
 npm run deploy:functions           # copia il planner, imposta i segreti, pubblica le Edge Functions, pianifica pg_cron
-npm run test:logic                 # test di unità (unione a tre vie, suddivisioni, saldi)
+npm run test:logic                 # test di unità (unione a tre vie, suddivisioni, saldi, import Money Manager)
 ```
 
 Build Android in locale (Gradle non supporta il JDK 25 di sistema):

@@ -9,6 +9,8 @@ import { SyncService, SyncStatus } from '../../services/sync.service';
 import { CategoryService } from '../../services/category.service';
 import { AuthComponent } from '../../components/auth/auth.component';
 import { RecoveryCodeComponent } from '../../components/recovery-code/recovery-code.component';
+import { MmImportComponent } from '../../components/mm-import/mm-import.component';
+import { MmImportService } from '../../services/mm-import.service';
 import { UserPreferences } from '../../models/user-preferences.model';
 import { ThemeService } from '../../services/theme.service';
 import { StorageService } from '../../services/storage.service';
@@ -46,6 +48,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     public  notifications: NotificationService,
     private sync:         SyncService,
     private categories:   CategoryService,
+    private mmImport:     MmImportService,
   ) {}
 
   ngOnInit(): void {
@@ -325,6 +328,29 @@ export class SettingsPage implements OnInit, OnDestroy {
       ],
     });
     await alert.present();
+  }
+
+  /** Importazione da Money Manager: lettura sul dispositivo, anteprima con abbinamento delle categorie, conferma. */
+  async onMmFileSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    this.isImporting = true;
+    try {
+      const data = await this.mmImport.read(file);
+      if (!data.transactions.length) { this.showToast('Il file non contiene movimenti.', 'warning'); return; }
+      const m = await this.modal.create({ component: MmImportComponent, componentProps: { data } });
+      await m.present();
+      const r = (await m.onDidDismiss()).data as { added: number; updated: number; categories: number; budgets: number } | undefined;
+      if (r) {
+        this.showToast(`Importati ${r.added} movimenti${r.updated ? ` (${r.updated} aggiornati)` : ''}, ${r.categories} categorie nuove, ${r.budgets} budget.`, 'success');
+      }
+    } catch (e) {
+      this.showToast((e as Error).message || 'File non valido.', 'danger');
+    } finally {
+      this.isImporting = false;
+    }
   }
 
   async clearData(): Promise<void> {

@@ -55,6 +55,15 @@ export class CategoryService {
     this.categories$.next([...DEFAULT_CATEGORIES, ...custom]);
   }
 
+  /** Aggiunge o aggiorna categorie personalizzate con id già definiti (importazione). */
+  upsertCustom(list: Category[]): void {
+    const byId = new Map(this.custom.map(c => [c.id, c]));
+    list.forEach(c => byId.set(c.id, { ...c, isCustom: true }));
+    const custom = [...byId.values()];
+    this.persistCustom(custom);
+    this.categories$.next([...DEFAULT_CATEGORIES, ...custom]);
+  }
+
   restoreCustom(custom: Category[]): void {
     this.persistCustom(custom);
     this.categories$.next([...DEFAULT_CATEGORIES, ...custom]);

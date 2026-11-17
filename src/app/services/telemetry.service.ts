@@ -55,7 +55,27 @@ export const TELEMETRY_LIMITS = {
 
 const NAME_RE = /^[a-z0-9_]{1,60}$/;
 /** Errori di sistema innocui o non nostri: non vengono inviati. */
-const IGNORED_ERRORS = [/ResizeObserver loop/i, /^Script error\.?$/i, /NG0100/];
+const IGNORED_ERRORS = [
+  /ResizeObserver loop/i, /^Script error\.?$/i, /NG0100/,
+  /UNIMPLEMENTED not implemented/i,                 // Ionic chiede al plugin Keyboard funzioni assenti su Android: innocuo
+  /wasm streaming compile failed|falling back to ArrayBuffer instantiation/i, // sql.js: avviso, poi funziona comunque
+  /ChunkLoadError|Loading chunk [\w-]+ failed/i,    // nuova versione pubblicata: gestito con un ricaricamento automatico
+];
+
+/**
+ * Build provate in locale (server di test su localhost) NON inviano nulla, per non riempire il bot di eventi ed errori
+ * dei test. L'app Android usa anch'essa https://localhost ma è nativa, quindi invia normalmente.
+ * Per i test della telemetria: localStorage.setItem('finanzai_telemetry_local', '1').
+ */
+function isLocalTestBuild(): boolean {
+  try {
+    if (Capacitor.isNativePlatform()) return false;
+    if (!/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) return false;
+    return localStorage.getItem('finanzai_telemetry_local') !== '1';
+  } catch {
+    return false;
+  }
+}
 
 /** Esegue fuori dalla zona Angular (niente change detection per i timer della telemetria). */
 function outsideAngular<T>(fn: () => T): T {
@@ -270,6 +290,7 @@ export class TelemetryService {
   }
 
   private async sendAll(): Promise<void> {
+    if (isLocalTestBuild()) { this.queue = []; this.saveQueue(); return; }
     if (this.droppedEvents > 0) {
       const n = this.droppedEvents;
       this.droppedEvents = 0;

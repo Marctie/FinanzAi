@@ -225,6 +225,14 @@
         <ion-spinner *ngIf="isImporting" slot="end" name="crescent"></ion-spinner>
         <ion-icon *ngIf="!isImporting" name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
       </ion-item>
+      <ion-item button detail="false" [disabled]="isImporting" (click)="mmFileInput.click()" data-testid="mm-import">
+        <ion-icon name="swap-horizontal-outline" slot="start" color="primary"></ion-icon>
+        <ion-label>
+          <h3>Importa da Money Manager</h3>
+          <p>Aggiunge movimenti, categorie e budget da un file .mmbackup</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end" color="medium"></ion-icon>
+      </ion-item>
       <ion-item button detail="false" (click)="exportCsv()" lines="none">
         <ion-icon name="download-outline" slot="start" color="primary"></ion-icon>
         <ion-label>
@@ -235,6 +243,8 @@
       </ion-item>
     </ion-list>
     <input #backupFileInput type="file" accept="application/json" hidden (change)="onBackupFileSelected($event)" />
+    <!-- Nessun filtro "accept": su iPhone le estensioni sconosciute (.mmbackup) verrebbero rese non selezionabili. -->
+    <input #mmFileInput type="file" hidden (change)="onMmFileSelected($event)" data-testid="mm-file" />
   </div>
 
   <div class="settings-group animate-in">
