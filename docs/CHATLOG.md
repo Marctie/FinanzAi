@@ -170,3 +170,9 @@ Richiesta utente: continuare autonomamente fino al completamento di tutto quanto
 - Utenti di test `@example.org`, i loro wallet ed eventi cancellati (`tests/e2e/cleanup.mjs`).
 - Privacy policy IT/EN riscritta e pubblicata (account, Supabase UE, wallet, notifiche, diagnostica con ID casuale di installazione, eliminazione account); testi della guida e della presentazione aggiornati.
 - Numero di versione unico (`scripts/bump-version.mjs`): 1.1.0, Android versionCode 2. AAB e APK di release firmati con il keystore della 1.0; istruzioni per Play Console (note di rilascio, Sicurezza dei dati, accesso all'app) in `docs/AGGIORNAMENTO_PLAY_1.1.0.md`.
+
+## 2026-11-17 — Attribuzione dei commit
+- Su richiesta: da ora nessun commit o PR riporta righe di coautore/attribuzione dell'assistente.
+- Scansione dei 24 repository pubblici dell'account: righe di attribuzione trovate in FinanzAi, Dispence, DispenceAi-privacy, ScoutSafe, Script-My-Nails-Professional e informatix-repair (qui anche commit con autore "Claude").
+- FinanzAi: righe rimosse da tutta la cronologia (git-filter-repo) e force push. Gli altri repository restano in attesa di conferma (riscrittura + force push).
+- AAB e APK 1.1.0 copiati in `Play Store/FinanzAi/release-1.1.0/` (fuori dal repository).
